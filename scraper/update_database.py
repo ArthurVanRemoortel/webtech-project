@@ -1,18 +1,14 @@
 import sqlite3
-import os
 from pprint import pprint
 from time import sleep
-import array
-from ab_parser import ABScraper
-from flagey2 import FlageyScraper
-import json
 import sys
+from scrape_scripts.ab_scraper import ABScraper
+from scrape_scripts.flagey_scraper import FlageyScraper
 
-
-SCRAPERS = [ABScraper,
-            FlageyScraper
-            ]
-
+SCRAPERS = [
+    ABScraper(),
+    FlageyScraper()
+]
 
 def get_event(conn, remote_id, title):
     command = "SELECT * FROM events WHERE remote_id == ? and title == ?"
@@ -40,19 +36,19 @@ def add_new_event(conn, event_title, event_url, remote_id, event_image, event_da
 
     conn.commit()
 
+
 class DatabaseUpdater:
     def __init__(self):
         self.update_inteval = 60  # In seconds.
         self.should_update = True
         self.conn = sqlite3.connect('database.db')
 
-    def start_update_cycle(self, once=False):
+    def start_update_cycle(self, once=False, results_limit=False):
         while self.should_update:
-            for Scraper in SCRAPERS:
-                s = Scraper()
-                print(f'Scraping {s.venue_name}')
-                results = s.start_scrape()
-                print(f'Done Scraping {s.venue_name}')
+            log = {'added': 0, 'updated': 0}
+            for scraper in SCRAPERS:
+                print(f'Scraping {scraper.venue_name}')
+                results = scraper.start_scrape(results_limit=results_limit)
                 results_counter = 0
                 for event_dict in results:
                     results_counter += 1
@@ -72,11 +68,14 @@ class DatabaseUpdater:
                                       event_dict['event_price'],
                                       event_dict['event_tags'],
                                       event_dict['previews'])
-
+                        log['added'] += 1
+                print(f'Done Scraping {scraper.venue_name}')
+            pprint(log)
             if once:
                 self.should_update = False
                 break
-            sleep(self.update_inteval)
+            else:
+                sleep(self.update_inteval)
 
 
 if __name__ == '__main__':
@@ -84,11 +83,11 @@ if __name__ == '__main__':
         raise Exception('Invalid command line args')
 
     dbu = DatabaseUpdater()
-    run_mode = sys.argv[1]
-    if run_mode == "run-once":
-        print('Only scraping 1 time')
-        dbu.start_update_cycle(once=True)
-    elif run_mode == 'run-forever':
-        dbu.start_update_cycle()
+    run_once = 'run-once' in sys.argv
+    results_limit = [sys.argv[i+1] for (i, arg) in enumerate(sys.argv) if arg == 'limit-results']
+    if results_limit:
+        results_limit = int(results_limit[0])
+    print(f"Running with run_once={run_once}, results_limit={results_limit}")
+    dbu.start_update_cycle(once=run_once, results_limit=results_limit)
 
 
