@@ -4,7 +4,6 @@ try:
     from .settings import SEARCH_PAGE_LIMIT
     from .helpers import get_parsable_html, extract_price_from_raw_string, clean_up_string
 except ModuleNotFoundError:
-    print("LOCAL")
     from settings import SEARCH_PAGE_LIMIT
     from helpers import get_parsable_html, extract_price_from_raw_string, clean_up_string
 

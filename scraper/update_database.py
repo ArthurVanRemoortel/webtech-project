@@ -47,7 +47,39 @@ def get_event(conn, remote_id, title):
     :return: list.
     """
     command = "SELECT * FROM events WHERE remote_id == ? and title == ?"
-    return conn.execute(command, (remote_id, title)).fetchall()
+    event_result = conn.execute(command, (remote_id, title)).fetchone()  # There should only be one event.
+    event_db_id = event_result[0]
+    event_dict = {
+            'event_url': event_result[7],
+            'remote_id': event_result[2],
+            'event_title': event_result[1],
+            'event_image': event_result[5],
+            'event_datetime': event_result[3],
+            'event_description': event_result[6],
+            'event_price': event_result[4],
+            'event_tags':  get_tags_of_event(conn, event_db_id),
+            'previews': get_previews_of_event(conn, event_db_id)
+            }
+    # Add tags and previews to dict.
+    return event_dict
+
+
+def get_tags_of_event(conn, event_id):
+    tags_commans = "SELECT tag_name \
+                            FROM event_tags_junction et \
+                    INNER JOIN tags t ON t.tag_id = et.tag_id \
+                            WHERE et.event_id = (?)"
+    tags = list(map(lambda tag_result: tag_result[0], conn.execute(tags_commans, (event_id, )).fetchall()))
+    return tags
+
+
+def get_previews_of_event(conn, event_id):
+    tags_commans = "SELECT url \
+                            FROM event_previews_junction ep \
+                    INNER JOIN previews p ON p.preview_id = ep.preview_id \
+                            WHERE ep.event_id = (?)"
+    tags = list(map(lambda preview_result: preview_result[0], conn.execute(tags_commans, (event_id, )).fetchall()))
+    return tags
 
 
 def add_new_event(conn, event_title, event_url, remote_id, event_image, event_datetime, event_description, event_price, event_tags, previews):
@@ -73,7 +105,6 @@ def add_new_event(conn, event_title, event_url, remote_id, event_image, event_da
         preview_url_id = conn.execute("select preview_id from previews where url == ?", (preview_url, )).fetchone()[0]
         add_junction_cmd = "insert into event_previews_junction (event_id, preview_id) values (?, ?);"
         conn.execute(add_junction_cmd, (event_id, preview_url_id))
-
     conn.commit()
 
 
@@ -127,6 +158,7 @@ if __name__ == '__main__':
     print(f"Running with run_once={run_once}, limit_results={limit_results}")
 
     dbu = DatabaseUpdater()
-    dbu.start_update_cycle(once=run_once, limit_results=limit_results)
+    pprint(get_event(dbu.conn, "20853", "Marco Borsato"))
+    #dbu.start_update_cycle(once=run_once, limit_results=limit_results)
 
 
