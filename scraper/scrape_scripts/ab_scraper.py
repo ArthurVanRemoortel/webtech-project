@@ -26,10 +26,10 @@ class ABScraper(object):
         self.root_url = "https://www.abconcerts.be"
         self.search_page = "https://www.abconcerts.be/nl/agenda/evenementen/?category[]=20"
 
-    def start_scrape(self, results_limit=None):
+    def start_scrape(self, limit_results=None):
         """
         Scrapes all upcoming events
-        :param results_limit: If set, the scraping will end early.
+        :param limit_results: If set, the scraping will end early.
         :return: list of dictionaries.
         """
         results = []
@@ -61,7 +61,7 @@ class ABScraper(object):
                         print(f'FAILED: {event_url}')
                         raise e
                     sleep(0.2)
-                if results_limit and len(results) >= results_limit:
+                if limit_results and len(results) >= limit_results:
                     next_page_url = None
                     break
 

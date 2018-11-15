@@ -18,7 +18,7 @@ class FlageyScraper(object):
         self.root_url = "https://www.flagey.be"
         self.search_page = "https://www.flagey.be/nl/program/1-music"
 
-    def start_scrape(self, results_limit=False):
+    def start_scrape(self, limit_results=False):
         results = []
         soup = get_parsable_html(self.search_page)
         current_page_n = 1
@@ -46,7 +46,7 @@ class FlageyScraper(object):
                     r = self.scrape_event(event_url)
                     results.append(r)
                     sleep(0.2)
-                if results_limit and len(results) >= results_limit:
+                if limit_results and len(results) >= limit_results:
                     next_page_url = None
                     break
 
@@ -90,5 +90,5 @@ class FlageyScraper(object):
 if __name__ == '__main__':
     from pprint import pprint
     s = FlageyScraper()
-    r = s.start_scrape(results_limit=5)
+    r = s.start_scrape(limit_results=5)
     pprint(r)
