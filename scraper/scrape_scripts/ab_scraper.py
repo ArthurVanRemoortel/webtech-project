@@ -99,8 +99,7 @@ class ABScraper(object):
         else:
             previews = []
 
-        return {
-                'event_url': event_url,
+        return {'event_url': event_url,
                 'remote_id': remote_id,  # Found in the url of the event.
                 'event_title': event_title,
                 'event_image': event_image,
@@ -108,8 +107,7 @@ class ABScraper(object):
                 'event_description': event_description,
                 'event_price': event_price,
                 'event_tags': event_tags,
-                'previews': previews
-                }
+                'previews': previews}
 
 
 if __name__ == '__main__':

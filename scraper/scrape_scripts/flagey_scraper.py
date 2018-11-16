@@ -73,8 +73,7 @@ class FlageyScraper(object):
         event_datetime_str = soup.find('div', class_='infos__datetime').time['datetime']
         event_price = extract_price_from_raw_string(soup.find('span', class_='infos__price').text)
         event_datetime = parse_datetime(event_datetime_str)
-        return {
-                'event_url': event_url,
+        return {'event_url': event_url,
                 'remote_id': remote_id,  # Optional. Found in the url of the event.
                 'event_title': event_title,
                 'event_image': event_image,
@@ -82,8 +81,7 @@ class FlageyScraper(object):
                 'event_description': event_description,
                 'event_price': event_price,
                 'event_tags': event_tags,
-                'previews': []
-                }
+                'previews': []}
 
 
 if __name__ == '__main__':
