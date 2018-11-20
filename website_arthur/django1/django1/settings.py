@@ -25,7 +25,7 @@ SECRET_KEY = '$a4#oii-po(dx$4te%)2x2zm@55=133evw18)f2*v2qxz$%f^j'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
