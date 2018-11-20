@@ -33,7 +33,7 @@ from scrape_scripts.flagey_scraper import FlageyScraper
 
 SCRAPERS = [
     ABScraper(),
-    #FlageyScraper()
+    FlageyScraper()
 ]
 UPDATE_INTERVAL = 3600
 
