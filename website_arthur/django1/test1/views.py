@@ -5,7 +5,7 @@ from django.http import HttpResponse
 
 def index(request):
     context = {
-        'search_results': [[1, 2], [3, 4], [5, 6], [7]]
+        'search_results': [[1, 2], [3, 4], [5, 6], [7], [8, 9]]
     }
     return render(request, 'index.html', context)
 
