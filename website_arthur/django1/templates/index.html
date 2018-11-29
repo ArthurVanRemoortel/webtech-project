@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 {% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
 
 {% block content %}
 
@@ -10,59 +16,66 @@
     <p class="lead">Slogan. Or put a carousel with random upcoming events here</p>
 </div>
 
-<div class="container">
-    <div class="input-group">
-        <input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Filter functionality (this is only a placeholder)">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
-            <button class="btn btn-outline-secondary" type="button">Search</button>
+<form class="form-group" method="post">
+    {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+    {% csrf_token %}
+    <!--{{ form }}-->
+    <div class="container">
+        <div class="input-group">
+            {% render_field form.event_title class="form-control" %}
+            <!--<input type="text" class="form-control" placeholder="Filter functionality (this is only a placeholder)" id="your_name">-->
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
         </div>
     </div>
-</div>
-<br>
-<div class="container collapse" id="collapsibleFilter">
-    <form class="needs-validation form-group" novalidate>
-        <div class="form-row">
-            <div class="col-md-6 input-group mb-2">
-                <!--<label for="validationTooltip03">Genres</label>-->
-                <div class="input-group-prepend">
-                    <div class="input-group-text" style="width:80px">Genres</div>
+    <br>
+    <div class="container collapse" id="collapsibleFilter">
+        <!--<form class="needs-validation form-group" novalidate>-->
+            <div class="form-row">
+                <div class="col-md-6 input-group mb-2">
+                    <!--<label for="validationTooltip03">Genres</label>-->
+                    <div class="input-group-prepend">
+                        <div class="input-group-text" style="width:80px">Genres</div>
+                    </div>
+                    {% render_field form.genres class="form-control" %}
+                    <!--<input type="text" class="form-control" id="validationTooltip02">-->
                 </div>
-                <input type="text" class="form-control" id="validationTooltip02">
-                <div class="invalid-tooltip">
-                    Please provide a valid city.
-                </div>
-            </div>
-            <div class="col-md-6 input-group mb-2">
-                <div class="input-group-prepend">
-                    <div class="input-group-text" style="width:60px">Date</div>
-                </div>
-                <input type="date" name="date" max="3000-12-31"
-                       min="2000-01-01" class="form-control">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="col-md-6 input-group mb-2">
-                <div class="input-group-prepend">
-                    <div class="input-group-text" style="width:80px">City</div>
-                </div>
-                <input type="text" class="form-control" id="validationTooltip03">
-                <div class="invalid-tooltip">
-                    Please provide a valid city.
+
+                <div class="col-md-6 input-group mb-2">
+                    {% render_field form.date class="form-control" %}
+
+                    <!--<div class="input-group-prepend">-->
+                        <!--<div class="input-group-text" style="width:60px">Date</div>-->
+                    <!--</div>-->
+
+                    <!--<input type="date" name="date" max="3000-12-31"-->
+                           <!--min="2000-01-01" class="form-control">-->
                 </div>
             </div>
-            <div class="col-md-6 input-group mb-2">
-                <div class="input-group-prepend">
-                    <div class="input-group-text" style="width:60px">Zip</div>
+            <div class="form-row">
+                <div class="col-md-6 input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text" style="width:80px">City</div>
+                    </div>
+                    {% render_field form.city class="form-control" %}
+                    <!--<input type="text" class="form-control" id="validationTooltip03">-->
                 </div>
-                <input type="text" class="form-control" id="validationTooltip05">
-                <div class="invalid-tooltip">
-                    Please provide a valid zip.
+                <div class="col-md-6 input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text" style="width:60px">Zip</div>
+                    </div>
+                    {% render_field form.zip class="form-control" %}
+                    <!--<input type="text" class="form-control" id="validationTooltip05">-->
                 </div>
             </div>
-        </div>
-    </form>
-</div>
+        <!--</form>-->
+    </div>
+</form>
 
 
 
@@ -85,8 +98,12 @@
                             <button type="button" class="btn btn-info">Blues</button>
                         </div>
                         <div class="btn-group mr-2 btn-group-sm " role="group" aria-label="Second group">
-                            <button type="button" class="btn btn-secondary">B</button>
-                            <button type="button" class="btn btn-secondary">Map</button>
+                            <button type="button" class="btn btn-secondary">
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                            <button type="button" class="btn btn-secondary">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

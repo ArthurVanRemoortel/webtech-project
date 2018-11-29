@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% extends 'layout.html'%}
+{% load widget_tweaks %}
 {% block content %}
 <body>
 
@@ -10,33 +11,43 @@
     <p class="lead">
         {% lorem 1 %}
     </p>
-    <form>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
         <div class="form-group">
-            <label for="venueNameInput">Venue Name</label>
-            <input type="text" class="form-control" id="venueNameInput">
+            <label for="venue_name">Venue Name</label>
+            {% render_field form.venue_name class="form-control" %}
+            <!--<input type="text" class="form-control" id="venueNameInput">-->
         </div>
         <div class="form-group">
-            <label for="adresInput">Adres</label>
-            <input type="text" class="form-control" id="adresInput">
+            <label for="adress">Address</label>
+            {% render_field form.address class="form-control" %}
+            <!--<input type="text" class="form-control" id="addressInput">-->
         </div>
-
+        <br>
         <iframe width="100%" height="350"
                 frameborder="0"
                 scrolling="no"
                 marginheight="0"
                 marginwidth="0"
                 src="https://www.openstreetmap.org/export/embed.html?bbox=4.388093948364259%2C50.816944275211995%2C4.412298202514649%2C50.825457269654166&amp;layer=mapnik" style="border: 1px solid black">
-        </iframe><small>Please make sure the adres is correct.</small><br/>
+        </iframe><small>Please make sure the address is correct.</small><br/>
 
         <div class="form-group mt-2">
-            <label for="descriptionField">Add a description for your venue.</label>
-            <textarea class="form-control" id="descriptionField" rows="4"></textarea>
+            <label for="description">Add a description for your venue.</label>
+            {% render_field form.description class="form-control" %}
+            <!--<textarea class="form-control" id="descriptionField" rows="4"></textarea>-->
         </div>
         <div class="form-group mt-2">
-            <label for="coverImage">Venue Image</label>
+            <label for="venue_image">Venue Image</label>
             <div class="custom-file">
-                <input type="file" class="custom-file-input" id="coverImage" aria-describedby="inputGroupFileAddon04">
-                <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+                <!--<input type="file" class="custom-file-input" id="venue_image2">-->
+                <!--{% render_field form.venue_image class="custom_file_input" %}-->
+                {{ form.venue_image|add_class:'custom-file-input'}}
+                <label class="custom-file-label" for="venue_image">Choose file</label>
+
             </div>
         </div>
         <button type="submit" class="btn btn-primary mb-2">Confirm</button>

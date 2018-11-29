@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    "bootstrap4",
+    'widget_tweaks',
+    'bootstrap_datepicker_plus',
     # 'django.contrib.gis',
 
     'test1.apps.Test1Config',
