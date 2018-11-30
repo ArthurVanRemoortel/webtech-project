@@ -6,7 +6,7 @@ class EventFilterForm(forms.Form):
     event_title = forms.CharField(label='Event title', max_length=100, empty_value="Filter functionality (this is only a placeholder)")
     genres = forms.CharField(max_length=100)
     date = forms.DateField(
-        widget=DatePickerInput(format='%m/%d/%Y')
+        widget=DatePickerInput(format='%d/%m/%Y')
     )
     city = forms.CharField(max_length=100)
     zip = forms.CharField(max_length=20)

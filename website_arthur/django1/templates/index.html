@@ -18,15 +18,14 @@
 
 <form class="form-group" method="post">
     {% csrf_token %}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
+    {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+    {% endfor %}
     {% csrf_token %}
     <!--{{ form }}-->
     <div class="container">
         <div class="input-group">
             {% render_field form.event_title class="form-control" %}
-            <!--<input type="text" class="form-control" placeholder="Filter functionality (this is only a placeholder)" id="your_name">-->
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -35,45 +34,32 @@
     </div>
     <br>
     <div class="container collapse" id="collapsibleFilter">
-        <!--<form class="needs-validation form-group" novalidate>-->
-            <div class="form-row">
-                <div class="col-md-6 input-group mb-2">
-                    <!--<label for="validationTooltip03">Genres</label>-->
-                    <div class="input-group-prepend">
-                        <div class="input-group-text" style="width:80px">Genres</div>
-                    </div>
-                    {% render_field form.genres class="form-control" %}
-                    <!--<input type="text" class="form-control" id="validationTooltip02">-->
+        <div class="form-row">
+            <div class="col-md-6 input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text" style="width:80px">Genres</div>
                 </div>
-
-                <div class="col-md-6 input-group mb-2">
-                    {% render_field form.date class="form-control" %}
-
-                    <!--<div class="input-group-prepend">-->
-                        <!--<div class="input-group-text" style="width:60px">Date</div>-->
-                    <!--</div>-->
-
-                    <!--<input type="date" name="date" max="3000-12-31"-->
-                           <!--min="2000-01-01" class="form-control">-->
-                </div>
+                {% render_field form.genres class="form-control" %}
             </div>
-            <div class="form-row">
-                <div class="col-md-6 input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text" style="width:80px">City</div>
-                    </div>
-                    {% render_field form.city class="form-control" %}
-                    <!--<input type="text" class="form-control" id="validationTooltip03">-->
-                </div>
-                <div class="col-md-6 input-group mb-2">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text" style="width:60px">Zip</div>
-                    </div>
-                    {% render_field form.zip class="form-control" %}
-                    <!--<input type="text" class="form-control" id="validationTooltip05">-->
-                </div>
+
+            <div class="col-md-6 input-group mb-2">
+                {% render_field form.date class="form-control" %}
             </div>
-        <!--</form>-->
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text" style="width:80px">City</div>
+                </div>
+                {% render_field form.city class="form-control" %}
+            </div>
+            <div class="col-md-6 input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text" style="width:60px">Zip</div>
+                </div>
+                {% render_field form.zip class="form-control" %}
+            </div>
+        </div>
     </div>
 </form>
 
