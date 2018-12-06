@@ -1,5 +1,5 @@
 from django import forms
-from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
+from bootstrap_datepicker_plus import DatePickerInput
 
 
 class EventFilterForm(forms.Form):

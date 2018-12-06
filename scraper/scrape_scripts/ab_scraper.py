@@ -22,7 +22,7 @@ def translate_datetime_string(date_string):
 
 class ABScraper(object):
     def __init__(self):
-        self.venue_name = 'AB'
+        self.venue_name = 'Ancienne Belgique'
         self.root_url = "https://www.abconcerts.be"
         self.search_page = "https://www.abconcerts.be/nl/agenda/evenementen/?category[]=20"
 
