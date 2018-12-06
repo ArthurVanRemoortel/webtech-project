@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<body>
+
+<div class="container mt-3" style="padding-top: 50px">
+    <!--Launch modal button-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        Launch demo modal
+    </button>
+
+    <!--The modal-->
+    <div class="modal fade bd-example-modal-lg" id="exampleModalCenter" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="post" enctype="multipart/form-data">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add an event to your venue.</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <!--Content-->
+                    <div class="container">
+                        <p class="lead">
+                            {% lorem 1 %}
+                        </p>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                        {% endfor %}
+                        <div class="form-group mb-3">
+                            <label for="event_name">Event Name</label>
+                            {% render_field form.event_name class="form-control" %}
+                        </div><div class="form-group mb-3">
+                            <label for="event_name">Date</label>
+                            {% render_field form.date class="form-control" %}
+                        </div>
+                        <div class="form-group">
+                            <label for="venueInput">Venue</label>
+                            {% render_field form.venue class="form-control" %}
+
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="artistsInput">Artist(s)</label>
+                            {% render_field form.artists class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="description">Description</label>
+                            {% render_field form.description class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="description">Offiacial Page</label>
+                            {% render_field form.official_page class="form-control" %}
+                        </div>
+                        <div class="form-group mb-1">
+                            <label for="description">Previews</label>
+                            {% render_field form.preview_links class="form-control" rows=5%}
+                            <br>
+                        </div>
+                        <div class="form-row mb-2">
+                            <div class="col-md-6 input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">€</div>
+                                </div>
+                                {% render_field form.price class="form-control" %}
+                            </div>
+                            <div class="form-group col-md-6 input-group mb-2">
+                                <div class="custom-file">
+                                    {% render_field form.event_image class="custom-file-input" %}
+                                    <label class="custom-file-label">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+{% endblock %}
