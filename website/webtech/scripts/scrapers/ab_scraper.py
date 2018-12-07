@@ -25,6 +25,9 @@ class ABScraper(object):
         self.venue_name = 'Ancienne Belgique'
         self.root_url = "https://www.abconcerts.be"
         self.search_page = "https://www.abconcerts.be/nl/agenda/evenementen/?category[]=20"
+        self.description = "Ancienne Belgique is a concert hall for contemporary music in Brussels, Belgium. Located in the historic heart of Brussels, it is one of the leading concert venues in Belgium, hosting a wide variety of international and local acts."
+        self.venue_image = "https://siena.rosselcdn.net/sites/default/files/dpistyles_v2/ena_16_9_extra_big/2017/11/22/node_213748/652347/public/2017/11/22/B9713902390Z.1_20171122184210_000%2BGOHA74O2V.1-0.jpg?itok=J1tCcXPP"
+        self.venue_addres = "Boulevard Anspach 110"
 
     def start_scrape(self, limit_results=None):
         """

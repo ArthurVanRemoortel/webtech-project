@@ -4,13 +4,13 @@ from .models import Venue
 
 
 class EventFilterForm(forms.Form):
-    event_title = forms.CharField(label='Event title', max_length=100, empty_value="Filter functionality (this is only a placeholder)")
-    genres = forms.CharField(max_length=100)
+    event_title = forms.CharField(label='Event title', max_length=100, required=False)
+    genres = forms.CharField(max_length=100, required=False)
     date = forms.DateField(
-        widget=DatePickerInput(format='%d/%m/%Y')
+        widget=DatePickerInput(format='%d/%m/%Y'), required=False
     )
-    city = forms.CharField(max_length=100)
-    zip = forms.CharField(max_length=20)
+    city = forms.CharField(max_length=100, required=False)
+    zip = forms.CharField(max_length=20, required=False)
 
 
 class AddVenueForm(forms.Form):
@@ -39,5 +39,8 @@ class AddEventToVenueForm(forms.Form):
     preview_links = forms.CharField(widget=forms.Textarea)
     event_image = forms.ImageField()
 
-
+class MapForm(forms.Form):
+    search_string = forms.CharField()
+    show_bookmarked_venues = forms.BooleanField(widget=forms.CheckboxInput)
+    show_bookmarked_events = forms.BooleanField(widget=forms.CheckboxInput)
 

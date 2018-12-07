@@ -16,6 +16,9 @@ class FlageyScraper(object):
         self.venue_name = 'Flagey'
         self.root_url = "https://www.flagey.be"
         self.search_page = "https://www.flagey.be/nl/program/1-music"
+        self.description = "Flagey Square, is a square in the Brussels municipality of Ixelles, Belgium. With ten streets converging at Flagey Square, it is one of the best connected crossroads in the city, directly adjacent to the neighbouring Ixelles Ponds. A large flood control reservoir and a parking lot have been built under the square."
+        self.venue_image = "https://www.flagey.be/assets/img/og_image_20170607.png"
+        self.venue_addres = "Place Sainte-Croix"
 
     def start_scrape(self, limit_results=False):
         results = []

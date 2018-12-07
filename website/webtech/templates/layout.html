@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        @media only screen and (max-width: 600px) {
+        @media only screen and (max-width: 720px) {
             div.event-info {
                 order: -1;
                 margin: auto;
@@ -35,7 +35,6 @@
             h5.event-title {
                 font-size: 26pt;
                 padding-left: 6px;
-
             }
         }
     </style>
@@ -65,13 +64,7 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item">
-                <a class="nav-link" href="#">Map</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'venues' %}">Venues</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Bookmarks</a>
+                <a class="nav-link" href="{% url 'map' %}">Map</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'add_venue_form_test' %}">add_venue_form_test</a>
@@ -83,7 +76,7 @@
 
         <form class="form-inline">
             <div class="form-group">
-                <button class="btn btn-outline-success mr-sm-2" type="submit">Login</button>
+                <button class="btn btn-outline-success mr-sm-2" type="submit">Log in</button>
                 <button class="btn btn-outline-success my-sm-0 pl-2" type="submit">Sign up</button>
             </div>
         </form>

@@ -1,41 +1,57 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm
+from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm
 from .models import Venue, Event, Genre, Artist, Preview
 
 
 def index(request):
-    all_events = Event.objects.all()
-    search_results = []
-    for i, item in enumerate(all_events):
-        if i % 2 == 0:
-            search_results.append([])
-        search_results[-1].append(item)
-
-    context = {
-        'search_results': search_results
-    }
+    context = {}
+    search_results_events = []
     if request.method == 'POST':
         form = EventFilterForm(request.POST)
         form.data = request.POST.copy()
         if form.is_valid():
-            return HttpResponseRedirect('/map/')
+            event_title = form.cleaned_data['event_title']
+            genres = form.cleaned_data['genres'].split(', ')
+            date = form.cleaned_data['date']
+            city = form.cleaned_data['city']
+            zip = form.cleaned_data['zip']
+            search_results_events = Event.objects.filter(name__contains=event_title)
+
     else:
         form = EventFilterForm()
+        search_results_events = Event.objects.all()
+
+    search_results = []
+    for i, item in enumerate(search_results_events):
+        if i % 2 == 0:
+            search_results.append([])
+        search_results[-1].append(item)
+    context['search_results'] = search_results
+
+
     context['form'] = form
     return render(request, 'index.html', context)
 
 
-def event_page(request):
-    context = {}
+def event_page(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    context = {'event': event}
     return render(request, 'event_page.html', context)
 
 
-def venues(request):
-    context = {}
-    # Test
-    context['form'] = EventFilterForm()
-    return render(request, 'venues.html', context)
+def venue_page(request, venue_id):
+    venue = Venue.objects.get(pk=venue_id)
+    context = {'venue': venue}
+    return render(request, 'venue_page.html', context)
+
+
+def map(request):
+    context = {'form': MapForm()}
+    return render(request, 'map.html', context)
+
+
+# ----------- Testing --------------- #
 
 
 def add_venue_form_test(request):
@@ -98,30 +114,42 @@ def scrape(request):
     Event.objects.all().delete()
     Preview.objects.all().delete()
     Genre.objects.all().delete()
+    Venue.objects.all().delete()
+
+    def django_image_from_url(url):
+        response = requests.get(url)
+        image = Image.open(BytesIO(response.content))
+        file = BytesIO()
+        image.save(file, 'JPEG')
+        file.seek(0)
+        image_name = url.split("/")[-1]
+        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
+            image_name += '.jpg'
+        return ContentFile(file.read(), image_name)
 
     for scraper in [FlageyScraper(), ABScraper()]:
         print(f'Scraping {scraper.venue_name}')
+
+        venue_object, _ = Venue.objects.get_or_create(
+            name=scraper.venue_name,
+            address_string=scraper.venue_addres,
+            description=scraper.description,
+            image=django_image_from_url(scraper.venue_image)
+        )
+
         results = scraper.start_scrape(limit_results=False)
-        venue = Venue.objects.get(name=scraper.venue_name)
         for event_dict in results:
             event_name = event_dict['event_title']
-            response = requests.get(event_dict['event_image'])
-            image = Image.open(BytesIO(response.content))
-            file = BytesIO()
-            image.save(file, 'JPEG')
-            file.seek(0)
-            image_name = event_dict['event_image'].split("/")[-1]
-            if ".jpeg" not in image_name and ".jpg" not in  image_name and ".png" not in image_name:
-                image_name += '.jpg'
-            django_friendly_file = ContentFile(file.read(), image_name)
+
             description = event_dict['event_description']
             if description is None:
                 description = ""
+            image = django_image_from_url(event_dict['event_image'])
             event_object = Event(name=event_name,
-                                 venue=venue,
+                                 venue=venue_object,
                                  description=description,
                                  price=event_dict['event_price'],
-                                 image=django_friendly_file, #event_dict['event_image'],
+                                 image=image,
                                  official_page=event_dict['event_url'],
                                  datetime=event_dict['event_datetime']
                                  )
@@ -143,4 +171,3 @@ def scrape(request):
                 event_object.genres.add(g)
 
     return HttpResponse("Done")
-

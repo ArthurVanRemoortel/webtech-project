@@ -4,7 +4,7 @@ from django.contrib.gis.db import models
 class Venue(models.Model):
     name = models.CharField(max_length=50)
     address_string = models.CharField(max_length=200)
-    description = models.CharField(max_length=2000)
+    description = models.CharField(max_length=3000)
     image = models.ImageField(upload_to='images')
 
     def __str__(self):
@@ -14,7 +14,7 @@ class Venue(models.Model):
 class Event(models.Model):
     name = models.CharField(max_length=100)
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
-    description = models.CharField(max_length=2000)
+    description = models.CharField(max_length=3000)
     price = models.FloatField()
     image = models.ImageField(upload_to='images')
     official_page = models.CharField(max_length=300)
@@ -24,7 +24,11 @@ class Event(models.Model):
 
     def shorten_description(self):
         if len(self.description) > 283:
-            return self.description[:280]+"..."
+            desc = self.description[:285]
+            while desc[-1] != " ":
+                desc = desc[:-1]
+            desc += "..."
+            return desc
         else:
             return self .description
 
@@ -62,4 +66,11 @@ class Artist(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class VenueReview(models.Model):
+    #author = models.ForeignKey('User', on_delete=models.CASCADE)
+    text = models.CharField(max_length=1000)
+
+
 
