@@ -16,6 +16,7 @@ def index(request):
             date = form.cleaned_data['date']
             city = form.cleaned_data['city']
             zip = form.cleaned_data['zip']
+
             search_results_events = Event.objects.filter(name__contains=event_title)
 
     else:
@@ -28,8 +29,6 @@ def index(request):
             search_results.append([])
         search_results[-1].append(item)
     context['search_results'] = search_results
-
-
     context['form'] = form
     return render(request, 'index.html', context)
 
@@ -155,19 +154,17 @@ def scrape(request):
                                  )
             event_object.save()
 
-            for artist in []:
-                artist_instance = Artist(name=artist, last_fm_entry_exists=False)
-                artist_instance.save()
+            # IMPORANT: !!! No artists are currently scraped from an event. For testing purposes only, one is made up.
+            for artist in ["Charles Mingus"]:
+                artist_instance, new = Artist.objects.get_or_create(name=artist, last_fm_entry_exists=True)
                 artist_instance.events.add(event_object)
 
             for preview_url in event_dict['previews']:
-                p = Preview(url=preview_url, type="youtube")
-                p.save()
+                p, _ = Preview.objects.get_or_create(url=preview_url, type="youtube")
                 event_object.previews.add(p)
 
             for genre in event_dict['event_tags']:
-                g = Genre(name=genre)
-                g.save()
+                g, _ = Genre.objects.get_or_create(name=genre)
                 event_object.genres.add(g)
 
     return HttpResponse("Done")
