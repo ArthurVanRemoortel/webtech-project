@@ -1,6 +1,6 @@
 # webtech-project
 
-Use the "website" folder. "website_arthur" is badly configgured and outdated.
+Use the "website" folder. "website_arthur" is badly configured and outdated.
 
 #### Dependencies:
 
