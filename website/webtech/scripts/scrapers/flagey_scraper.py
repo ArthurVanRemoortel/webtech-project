@@ -90,5 +90,5 @@ class FlageyScraper(object):
 if __name__ == '__main__':
     from pprint import pprint
     s = FlageyScraper()
-    r = s.start_scrape(limit_results=5)
+    r = s.start_scrape(limit_results=True)
     pprint(r)

@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     address_string = models.CharField(max_length=200)
     description = models.CharField(max_length=3000)
     image = models.ImageField(upload_to='images')
@@ -60,7 +60,7 @@ class Genre(models.Model):
 
 
 class Artist(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     events = models.ManyToManyField(Event)
     last_fm_entry_exists = models.BooleanField(False)
 

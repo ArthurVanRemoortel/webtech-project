@@ -7,4 +7,5 @@ Use the "website" folder. "website_arthur" is badly configgured and outdated.
 * [django-bootstrap4](https://pypi.org/project/django-bootstrap4/)
 * [django-widget-tweaks](https://github.com/jazzband/django-widget-tweaks)
 * [django-bootstrap-datepicker-plus](https://github.com/monim67/django-bootstrap-datepicker-plus)
+* [django-cleanup](https://github.com/un1t/django-cleanup)
 * (Might have forgotten something)

@@ -9,15 +9,12 @@
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">-->
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
     <!-- Popper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-
     <!-- Latest compiled JavaScript -->
     <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>-->
     <!-- Makes things more mobile friendly -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         @media only screen and (max-width: 720px) {
             div.event-info {
@@ -31,13 +28,23 @@
                 border-width: 2px;
                 border-radius: 15px;
             }
-
             h5.event-title {
                 font-size: 26pt;
                 padding-left: 6px;
             }
         }
     </style>
+
+    <script>
+        function openArtistModal(artist_name) {
+            $('#myModal').on('shown.bs.modal', function () {
+                $('#myInput').trigger('focus')
+            })
+        }
+
+
+
+    </script>
 
     <title>Title</title>
 </head>
@@ -50,17 +57,11 @@
 {% endblock %}
 
 <body>
-
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-    <!-- Brand -->
     <a class="navbar-brand" href="{% url 'index' %}">Navbar</a>
-
-    <!-- Toggler/collapsibe Button -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
     </button>
-
-    <!-- Navbar links -->
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item">
@@ -73,7 +74,6 @@
                 <a class="nav-link" href="{% url 'add_event_form_test' %}">add_event_form_test</a>
             </li>
         </ul>
-
         <form class="form-inline">
             <div class="form-group">
                 <button class="btn btn-outline-success mr-sm-2" type="submit">Log in</button>
@@ -81,12 +81,12 @@
             </div>
         </form>
     </div>
-
-
 </nav>
 {% block content %}
-
 {% endblock %}
-</body>
 
+{% block javascript %}
+{% endblock %}
+
+</body>
 </html>

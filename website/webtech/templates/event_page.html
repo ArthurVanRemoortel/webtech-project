@@ -13,15 +13,14 @@
 </head>
 <body style="padding-top: 50px">
 
-
 <div style="width:100%; max-height:425px;">
     <img class="img-fluid" style="max-height:425px; width: 100%; object-fit:cover; object-position: 0 0;"
          src="{{ event.image.url }}">
 </div>
+
 <div class="container-fluid" style="padding-top: 10px">
     <h5 class="display-4 event-title">
         {{ event.name }}
-        <!--<small class="text-muted">With faded secondary text</small>-->
     </h5>
 
     <div class="row">
@@ -58,7 +57,7 @@
                 <dd class="ml-3 mb-0">{{artist.name}}
                     {% if artist.last_fm_entry_exists %}
                     <span>
-                        <button class="btn">
+                        <button class="btn" data-toggle="modal" data-target="#artistModal" data-artist="{{ artist.name }}">
                             <i class="fas fa-info-circle"></i>
                         </button>
                     </span>
@@ -66,18 +65,73 @@
                 </dd>
                 {% endfor %}
 
-                <dt class="ml-3">Links:</dt>
+                <dt class="ml-3 mt-2">Links:</dt>
                 <dd class="ml-3">official website</dd>
                 <dd class="ml-3">youtube.com</dd>
             </dl>
         </div>
-
     </div>
-
 </div>
-
-
 </body>
+
+<div class="modal fade" id="artistModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="artist-modal-title" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-7">
+                        <img id="artist-modal-image" class="img-fluid" style="width: 100%; height: 100%; object-fit:cover">
+                    </div>
+                    <div class="col-5 pl-0">
+                        <div id="artist-modal">
+                            <dl id="artist-modal-genres-list">
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <h5>Bio</h5>
+                <p id="artist-modal-bio"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 </html>
+
+{% block javascript %}
+<script>
+    $('#artistModal').on('show.bs.modal', function (event) {
+        var LASTFM_API_KEY = "21be84da5456cdad7c3f91947422f8ad";
+        let button = $(event.relatedTarget);
+        let artist = button.data('artist');
+        let modal = $(this);
+        let target  = `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${artist}&api_key=${LASTFM_API_KEY}&format=json`
+        $.getJSON(target, function(result) {
+            document.getElementById("artist-modal-bio").innerHTML = result.artist.bio.content.split("User-contributed text")[0];
+            document.getElementById("artist-modal-title").innerHTML = artist;
+            document.getElementById("artist-modal-image").src = result.artist.image[3]["#text"];
+
+            var output = "<dt>Genres:</dt>";
+            for(let i = 0; i < result.artist.tags.tag.length; i++){
+                console.log(result.artist.tags.tag[i].name);
+                output += "<dd>" + result.artist.tags.tag[i].name + "</dd>";
+                if(i === 4){
+                    break
+                }
+            }
+            document.getElementById('artist-modal-genres-list').innerHTML = output;
+
+        });
+    })
+</script>
+{% endblock %}
 
 {% endblock %}

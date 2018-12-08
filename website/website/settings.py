@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "bootstrap4",
     'widget_tweaks',
     'bootstrap_datepicker_plus',
+    'django_cleanup',
 
     'webtech',
 ]
@@ -81,9 +82,9 @@ WSGI_APPLICATION = 'website.wsgi.application'
 
 DATABASES = {
     'default': {
-         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': 'database',
-         'USER': 'webtech',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'database',
+        'USER': 'webtech',
     },
 }
 

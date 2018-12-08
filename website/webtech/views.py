@@ -2,7 +2,16 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm
 from .models import Venue, Event, Genre, Artist, Preview
+import requests
 
+def is_artist_on_lastfm(artist):
+    artist.replace(" ", "%20")
+    url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key=21be84da5456cdad7c3f91947422f8ad&format=json"
+    r = requests.get(url).json()
+    if 'error' in r:
+        return False
+    # TODO: Data can still be incomplete to the point of beeing useless.
+    return True
 
 def index(request):
     context = {}
@@ -89,7 +98,8 @@ def add_event_form_test(request):
             event_instance.save()
 
             for artist in artists_raw.split(','):
-                artist_instance = Artist(name=artist, last_fm_entry_exists=False)
+                last_fm_exists = is_artist_on_lastfm(artist)
+                artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
                 artist_instance.save()
                 artist_instance.events.add(event_instance)
 
@@ -106,11 +116,11 @@ def scrape(request):
     from .scripts.scrapers.flagey_scraper import FlageyScraper
     from .scripts.scrapers.ab_scraper import ABScraper
     from PIL import Image
-    import requests
     from io import BytesIO
     from django.core.files.base import ContentFile
 
     Event.objects.all().delete()
+    Artist.objects.all().delete()
     Preview.objects.all().delete()
     Genre.objects.all().delete()
     Venue.objects.all().delete()
@@ -128,7 +138,6 @@ def scrape(request):
 
     for scraper in [FlageyScraper(), ABScraper()]:
         print(f'Scraping {scraper.venue_name}')
-
         venue_object, _ = Venue.objects.get_or_create(
             name=scraper.venue_name,
             address_string=scraper.venue_addres,
@@ -139,7 +148,6 @@ def scrape(request):
         results = scraper.start_scrape(limit_results=False)
         for event_dict in results:
             event_name = event_dict['event_title']
-
             description = event_dict['event_description']
             if description is None:
                 description = ""
@@ -154,9 +162,14 @@ def scrape(request):
                                  )
             event_object.save()
 
-            # IMPORANT: !!! No artists are currently scraped from an event. For testing purposes only, one is made up.
-            for artist in ["Charles Mingus"]:
-                artist_instance, new = Artist.objects.get_or_create(name=artist, last_fm_entry_exists=True)
+            # IMPORANT: !!! No artists are currently scraped from an event. For testing purposes only, asume the event title is the artist.
+            # This will not be accurate, but good enough for demonstration.
+            for artist in [event_name]:
+                artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]  # feat. in a title can mean the the band name was before it.
+
+                last_fm_exists = -is_artist_on_lastfm(artist_adjusted)
+                print(f'{artist_adjusted}: {last_fm_exists}')
+                artist_instance, new = Artist.objects.get_or_create(name=artist_adjusted, last_fm_entry_exists=last_fm_exists)
                 artist_instance.events.add(event_object)
 
             for preview_url in event_dict['previews']:
