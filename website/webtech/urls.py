@@ -11,6 +11,6 @@ urlpatterns = [
     path('events/<int:event_id>', views.event_page, name='event_page'),
     path('venues/<int:venue_id>', views.venue_page, name='venue_page'),
 
-    path('scrape/', views.scrape, name='scrape'),
+    path('scrape/', views.scrape, name='scrape')
 
 ]

@@ -2,9 +2,9 @@ from django.contrib.gis.db import models
 
 
 class Venue(models.Model):
-    name = models.CharField(max_length=100)
-    address_string = models.CharField(max_length=200)
-    description = models.CharField(max_length=3000)
+    name = models.TextField()
+    address_string = models.TextField()
+    description = models.TextField()
     image = models.ImageField(upload_to='images')
 
     def __str__(self):
@@ -12,12 +12,12 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.TextField()
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
-    description = models.CharField(max_length=3000)
+    description = models.TextField()
     price = models.FloatField()
     image = models.ImageField(upload_to='images')
-    official_page = models.CharField(max_length=300)
+    official_page = models.TextField()
     previews = models.ManyToManyField('Preview')
     datetime = models.DateTimeField()
     genres = models.ManyToManyField('Genre')
@@ -48,19 +48,19 @@ class Event(models.Model):
 
 
 class Preview(models.Model):
-    url = models.CharField(max_length=200)
+    url = models.TextField()
     type = models.CharField(max_length=20)
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
 class Artist(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.TextField()
     events = models.ManyToManyField(Event)
     last_fm_entry_exists = models.BooleanField(False)
 
@@ -70,7 +70,7 @@ class Artist(models.Model):
 
 class VenueReview(models.Model):
     #author = models.ForeignKey('User', on_delete=models.CASCADE)
-    text = models.CharField(max_length=1000)
+    text = models.TextField()
 
 
 

@@ -10,7 +10,11 @@ class EventFilterForm(forms.Form):
         widget=DatePickerInput(format='%d/%m/%Y'), required=False
     )
     city = forms.CharField(max_length=100, required=False)
-    zip = forms.CharField(max_length=20, required=False)
+    range = forms.CharField(max_length=20, required=False)
+    range_unit = forms.ChoiceField(
+        choices=[(0, "m"), (1, "km")],
+        required=False
+    )
 
 
 class AddVenueForm(forms.Form):
@@ -23,7 +27,6 @@ class AddVenueForm(forms.Form):
 class AddEventToVenueForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(AddEventToVenueForm, self).__init__(*args, **kwargs)
-        #self.venues = venues
 
     event_name = forms.CharField(max_length=100)
     venue = forms.ChoiceField(
@@ -38,6 +41,7 @@ class AddEventToVenueForm(forms.Form):
     official_page = forms.URLField()
     preview_links = forms.CharField(widget=forms.Textarea)
     event_image = forms.ImageField()
+
 
 class MapForm(forms.Form):
     search_string = forms.CharField()

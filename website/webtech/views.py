@@ -3,6 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm
 from .models import Venue, Event, Genre, Artist, Preview
 import requests
+from math import ceil
+
 
 def is_artist_on_lastfm(artist):
     artist.replace(" ", "%20")
@@ -10,35 +12,61 @@ def is_artist_on_lastfm(artist):
     r = requests.get(url).json()
     if 'error' in r:
         return False
-    # TODO: Data can still be incomplete to the point of beeing useless.
+    # TODO: Verify if it actually contains usefull data.
     return True
 
+
 def index(request):
-    context = {}
+    """
+    The home page containing the search function.
+    """
+    page_n = int(request.GET.get('p', 1))
+    page_n = 1 if page_n == 0 else page_n
     search_results_events = []
+    
+    last_page_post_data = None
+    if request.method == 'GET' and 'current-search' in request.session:
+        # Whenever you change a page it will be considdered a GET request.
+        # I want to force it to be a POST request anyway and apply the form data again.
+        request.POST = request.session['current-search']
+        request.method = 'POST'
+        last_page_post_data = request.POST.copy()
+
     if request.method == 'POST':
         form = EventFilterForm(request.POST)
-        form.data = request.POST.copy()
         if form.is_valid():
             event_title = form.cleaned_data['event_title']
             genres = form.cleaned_data['genres'].split(', ')
             date = form.cleaned_data['date']
             city = form.cleaned_data['city']
-            zip = form.cleaned_data['zip']
-
+            _range = form.cleaned_data['range']
+            range_unit = form.cleaned_data['range_unit']
             search_results_events = Event.objects.filter(name__contains=event_title)
+            request.session['current-search'] = request.POST
 
+            if last_page_post_data is None:
+                # If last_page_post_data is None, the user submitted a different form from the last
+                # and the page counter should restart.
+                page_n = 1
     else:
         form = EventFilterForm()
         search_results_events = Event.objects.all()
 
+    total_pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
+    search_results_events = search_results_events[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
+    # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
     search_results = []
     for i, item in enumerate(search_results_events):
         if i % 2 == 0:
             search_results.append([])
         search_results[-1].append(item)
-    context['search_results'] = search_results
-    context['form'] = form
+
+    context = {
+        'search_results': search_results,
+        'page_n': page_n,
+        'total_pages': total_pages,
+        'form': form
+    }
     return render(request, 'index.html', context)
 
 
@@ -66,7 +94,6 @@ def add_venue_form_test(request):
     context = {}
     if request.method == 'POST':
         form = AddVenueForm(request.POST, request.FILES)
-        print('add_venue_form_test Valid: ', form.is_valid())
         if form.is_valid():
             venue_name = form.cleaned_data['venue_name']
             address = form.cleaned_data['address']
@@ -84,7 +111,6 @@ def add_event_form_test(request):
     context = {}
     if request.method == 'POST':
         form = AddEventToVenueForm(request.POST, request.FILES)
-        print('add_event_form_test Valid: ', form.is_valid())
         if form.is_valid():
             event_name = form.cleaned_data['event_name']
             venue = form.cleaned_data['venue']
@@ -102,9 +128,6 @@ def add_event_form_test(request):
                 artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
                 artist_instance.save()
                 artist_instance.events.add(event_instance)
-
-        else:
-            print(form.data)
     else:
         form = AddEventToVenueForm() #venues=["Ancienne Belgique"]
     context['form'] = form
@@ -137,7 +160,6 @@ def scrape(request):
         return ContentFile(file.read(), image_name)
 
     for scraper in [FlageyScraper(), ABScraper()]:
-        print(f'Scraping {scraper.venue_name}')
         venue_object, _ = Venue.objects.get_or_create(
             name=scraper.venue_name,
             address_string=scraper.venue_addres,
@@ -166,9 +188,7 @@ def scrape(request):
             # This will not be accurate, but good enough for demonstration.
             for artist in [event_name]:
                 artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]  # feat. in a title can mean the the band name was before it.
-
-                last_fm_exists = -is_artist_on_lastfm(artist_adjusted)
-                print(f'{artist_adjusted}: {last_fm_exists}')
+                last_fm_exists = is_artist_on_lastfm(artist_adjusted)
                 artist_instance, new = Artist.objects.get_or_create(name=artist_adjusted, last_fm_entry_exists=last_fm_exists)
                 artist_instance.events.add(event_object)
 
