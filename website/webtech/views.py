@@ -78,8 +78,15 @@ def event_page(request, event_id):
 
 def venue_page(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
-    context = {'venue': venue}
-    return render(request, 'venue_page.html', context)
+    venue_events_pairs = []
+    for i, item in enumerate(Event.objects.filter(venue=venue_id)):
+        if i % 2 == 0:
+            venue_events_pairs.append([])
+        venue_events_pairs[-1].append(item)
+    context = {'venue': venue,
+               'venue_events_pairs': venue_events_pairs
+               }
+    return render(request, 'venue.html', context)
 
 
 def map(request):

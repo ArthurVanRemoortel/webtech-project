@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body style="padding-top: 50px">
+
+
+<div style="width:100%; max-height:425px;">
+    <img class="img-fluid" style="max-height:425px; width: 100%; object-fit:cover; object-position: 0 0;"
+         src="{{ venue.image.url }}">
+</div>
+
+<div class="container-fluid" style="padding-top: 10px">
+    <h5 class="display-4 event-title">
+        {{ venue.name }}
+    </h5>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="lead" style="font-size: 13pt">
+                {{ venue.description }}
+            </p>
+            <dl>
+                <dt class="">Address:</dt>
+                <dd class="">{{ venue.address_string }}</dd>
+            </dl>
+        </div>
+
+        <div class="col-md-6">
+            <iframe width="100%" height="100%" style="min-height: 400px"
+                    frameborder="0"
+                    scrolling="no"
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=4.388093948364259%2C50.816944275211995%2C4.412298202514649%2C50.825457269654166&amp;layer=mapnik" style="border: 1px solid black">
+            </iframe>
+        </div>
+    </div>
+    <h5 class="" style="font-size: 16pt">
+        Events:
+    </h5>
+    <div class="">
+        {% for event_pair in venue_events_pairs %}
+        <div class="row card-deck mb-4">
+            {% for event in event_pair %}
+            <div class="col-sm-6">
+                <div class="card" style="height: 490px">
+                    <a href="{% url 'index' %}events/{{ event.id }}">
+                        <img class="card-img-top" style="height: 230px; object-fit: cover"
+                             src={{ event.image.url }}>
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title cut-of">{{ event.name }}</h5>
+                        <p class="card-text" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">{{ event.description }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-group mr-2 btn-group-sm" role="group" aria-label="First group">
+                                {% for genre in event.short_genres_list %}
+                                <button type="button" class="btn btn-secondary">{{ genre }}</button>
+                                {% endfor %}
+                            </div>
+                            <div class="btn-group mr-2 btn-group-sm " role="group" aria-label="Second group">
+                                <button type="button" class="btn btn-secondary">
+                                    <i class="far fa-bookmark"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+</body>
+</html>
+
+{% endblock %}
