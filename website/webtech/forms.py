@@ -6,7 +6,7 @@ from .models import Venue
 class EventFilterForm(forms.Form):
     event_title = forms.CharField(label='Event title', max_length=100, required=False)
     genres = forms.CharField(max_length=100, required=False)
-    date = forms.DateField(
+    date = forms.DateField(input_formats= ['%d/%m/%Y'],
         widget=DatePickerInput(format='%d/%m/%Y'), required=False
     )
     city = forms.CharField(max_length=100, required=False)
@@ -29,11 +29,12 @@ class AddEventToVenueForm(forms.Form):
         super(AddEventToVenueForm, self).__init__(*args, **kwargs)
 
     event_name = forms.CharField(max_length=100)
-    venue = forms.ChoiceField(
+    venue = forms.ChoiceField( # TODO: Only show venues linked to the users account.
         choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
     )
     artists = forms.CharField(max_length=100)
     description = forms.CharField(widget=forms.Textarea)
+    genres = forms.CharField(max_length=150)
     price = forms.CharField(max_length=20)
     date = forms.DateField(
         widget=DatePickerInput(format='%d/%m/%Y')

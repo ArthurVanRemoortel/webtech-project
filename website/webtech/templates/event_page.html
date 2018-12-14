@@ -22,8 +22,11 @@
     <h5 class="display-4 event-title">
         {{ event.name }}
     </h5>
-
-
+    <div class="btn-group mb-2 btn-group-sm" role="group" aria-label="First group">
+        {% for genre in event.genres.all %}
+        <button type="button" class="btn btn-secondary">{{ genre }}</button>
+        {% endfor %}
+    </div>
     <div class="row">
         <div class="col-sm-8">
             <p class="lead" style="font-size: 13pt">
@@ -115,10 +118,9 @@
         var LASTFM_API_KEY = "21be84da5456cdad7c3f91947422f8ad";
         let button = $(event.relatedTarget);
         let artist = button.data('artist');
-        let modal = $(this);
         let target  = `http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${artist}&api_key=${LASTFM_API_KEY}&format=json`
         $.getJSON(target, function(result) {
-            document.getElementById("artist-modal-bio").innerHTML = result.artist.bio.content.split("User-contributed text")[0];
+            document.getElementById("artist-modal-bio").innerHTML = result.artist.bio.content.split("User-contributed")[0];
             document.getElementById("artist-modal-title").innerHTML = artist;
             document.getElementById("artist-modal-image").src = result.artist.image[3]["#text"];
 

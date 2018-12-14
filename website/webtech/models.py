@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.db.models.functions import Length
 
 
 class Venue(models.Model):
@@ -22,21 +23,11 @@ class Event(models.Model):
     datetime = models.DateTimeField()
     genres = models.ManyToManyField('Genre')
 
-    def shorten_description(self):
-        if len(self.description) > 283:
-            desc = self.description[:285]
-            while desc[-1] != " ":
-                desc = desc[:-1]
-            desc += "..."
-            return desc
-        else:
-            return self .description
-
     def short_genres_list(self):
         characters_len = 0
         passed_genres = []
-        for genre_obj in self.genres.all():
-            if len(passed_genres) < 4 and len(genre_obj.name) + characters_len < 20:
+        for genre_obj in self.genres.all().order_by(Length('name').asc()):
+            if len(passed_genres) < 3 and len(genre_obj.name) + characters_len < 20:
                 characters_len += len(genre_obj.name)
                 passed_genres.append(genre_obj.name)
             else:

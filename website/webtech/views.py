@@ -7,8 +7,9 @@ from math import ceil
 
 
 def is_artist_on_lastfm(artist):
+    api_key = "21be84da5456cdad7c3f91947422f8ad"
     artist.replace(" ", "%20")
-    url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key=21be84da5456cdad7c3f91947422f8ad&format=json"
+    url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key={api_key}&format=json"
     r = requests.get(url).json()
     if 'error' in r:
         return False
@@ -31,17 +32,26 @@ def index(request):
         request.POST = request.session['current-search']
         request.method = 'POST'
         last_page_post_data = request.POST.copy()
+        search_results_events = []
 
     if request.method == 'POST':
         form = EventFilterForm(request.POST)
         if form.is_valid():
+            print(form.data)
             event_title = form.cleaned_data['event_title']
             genres = form.cleaned_data['genres'].split(', ')
+            if '' in genres:
+                genres.remove('')
             date = form.cleaned_data['date']
             city = form.cleaned_data['city']
             _range = form.cleaned_data['range']
             range_unit = form.cleaned_data['range_unit']
             search_results_events = Event.objects.filter(name__contains=event_title)
+            if date:
+                search_results_events = search_results_events.filter(datetime=date)
+            if genres:
+                search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
+
             request.session['current-search'] = request.POST
 
             if last_page_post_data is None:
@@ -52,7 +62,7 @@ def index(request):
         form = EventFilterForm()
         search_results_events = Event.objects.all()
 
-    total_pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
+    pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
     search_results_events = search_results_events[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
     # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
     search_results = []
@@ -61,14 +71,21 @@ def index(request):
             search_results.append([])
         search_results[-1].append(item)
 
+    all_genres = list(Genre.objects.all().values_list('name', flat=True))
     context = {
+        'carousel_events': Event.objects.all().order_by('datetime')[:5],
         'search_results': search_results,
         'page_n': page_n,
-        'total_pages': total_pages,
-        'form': form
+        'pages': pages,
+        'form': form,
+        'all_genres': all_genres
     }
     return render(request, 'index.html', context)
 
+
+def bookmark_event(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    return HttpResponse("OK")
 
 def event_page(request, event_id):
     event = Event.objects.get(pk=event_id)
@@ -106,6 +123,7 @@ def add_venue_form_test(request):
             address = form.cleaned_data['address']
             description = form.cleaned_data['description']
             venue_image = form.cleaned_data['venue_image']
+            time = None
             venue_instance = Venue(name=venue_name, address_string=address, description=description, image=venue_image)
             venue_instance.save()
     else:
@@ -126,8 +144,9 @@ def add_event_form_test(request):
             price_strig = form.cleaned_data['price']
             price = 0 if "free" in price_strig.lower() else float(price_strig)
             event_image = form.cleaned_data['event_image']
+            date = form.cleaned_data['date']
             venue_object = Venue.objects.get(id=venue)
-            event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image)
+            event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image, datetime=date)
             event_instance.save()
 
             for artist in artists_raw.split(','):
@@ -136,7 +155,7 @@ def add_event_form_test(request):
                 artist_instance.save()
                 artist_instance.events.add(event_instance)
     else:
-        form = AddEventToVenueForm() #venues=["Ancienne Belgique"]
+        form = AddEventToVenueForm()
     context['form'] = form
 
     return render(request, 'add_event_form.html', context)
@@ -207,4 +226,4 @@ def scrape(request):
                 g, _ = Genre.objects.get_or_create(name=genre)
                 event_object.genres.add(g)
 
-    return HttpResponse("Done")
+    return HttpResponse("OK")

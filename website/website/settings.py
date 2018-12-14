@@ -106,6 +106,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
