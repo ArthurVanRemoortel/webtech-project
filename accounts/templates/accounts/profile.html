@@ -1,0 +1,107 @@
+{% extends 'accounts/base.html' %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css">
+<!-- {{ form.media }} -->
+{% endblock %}
+
+{% block title %}
+<title>{{ profile.username }}'s profile</title>
+{% endblock %}
+
+{% block navitems %}
+
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid top_margin">
+	<div class="row">
+		<div class="col-md-4">
+
+			<div class="text-center bot_margin">
+				<img src="https://via.placeholder.com/200x200">
+			
+			<h2>Person's Name</h2>
+			<a class="btn btn-primary btn-xs" href="#">Social</a>
+			<a class="btn btn-primary btn-xs" href="#">Social</a>
+			<a class="btn btn-primary btn-xs" href="#">Social</a>
+			</div>
+			<hr/>
+			<div class="text-center">
+				<button type="button" class="btn btn-dark">Add venue</button>
+				<button type="button" class="btn btn-dark">Add event</button>
+			</div>
+		</div>
+
+		<div class="col-md-8">
+
+			<p class="lead">BIOGRAPHY: 
+				{{ profile.bio }}
+				{% static 'accounts/style.css' %}
+			<!-- Where does it come from?
+				Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. -->
+			
+			<hr/>
+			
+			<div class="reviewbox">
+				<img src="https://via.placeholder.com/100x100">
+				
+				Review text truncated with a read more button
+			</div>
+			<div>
+			    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        			Add event review.
+    			</button>
+
+    			<div class="modal fade bd-example-modal-lg" id="exampleModalCenter" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <form method="post" enctype="multipart/form-data">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Review an event you went to!</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <!--Content-->
+                    <!-- <div class="container">
+                        <p class="lead">
+                            {% lorem 1 %} lead
+                        </p>
+                    </div> -->
+                    <div class="modal-body">
+                        {% csrf_token %}	
+                        {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                        {% endfor %}
+                        
+	                    {{ e_form.as_p }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+			</div>	
+
+		</div>
+	</div>
+
+
+</div>
+
+
+<!--
+<h1>Bio</h1>
+<p>{{ profile.bio}}</p>
+
+<a href="{% url 'logout' %}">logout</a>
+
+{% endblock %} -->
