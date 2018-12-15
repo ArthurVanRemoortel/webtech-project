@@ -200,7 +200,7 @@ def scrapelastfm(request):
         event_object = Event(
                 name=event.name,
                 venue=Venue.objects.get(name=event.venue.name),
-                image=django_image_from_url(event.image) if event.image else None,
+                image=django_image_from_url(event.image) if event.image else Event.image.field.default,
                 official_page=event.official_page,
                 datetime=event.datetime
                 )
