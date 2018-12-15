@@ -29,9 +29,6 @@
                         </p>
                     </div>
                     <div class="modal-body">
-                        {% for hidden in form.hidden_fields %}
-                        {{ hidden }}
-                        {% endfor %}
                         <div class="form-group">
                             <label>Venue Name</label>
                             {% render_field form.venue_name class="form-control" %}
@@ -50,14 +47,14 @@
                         </iframe><small>Please make sure the address is correct.</small><br/>
 
                         <div class="form-group mt-2">
-                            <label for="description">Add a description for your venue.</label>
+                            <label>Add a description for your venue.</label>
                             {% render_field form.description class="form-control" %}
                         </div>
                         <div class="form-group mt-2">
-                            <label for="venue_image">Venue Image</label>
+                            <label>Venue Image</label>
                             <div class="custom-file">
                                 {{ form.venue_image|add_class:'custom-file-input'}}
-                                <label class="custom-file-label" for="venue_image">Choose file</label>
+                                <label class="custom-file-label">Choose file</label>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary mb-2">Confirm</button>

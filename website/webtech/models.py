@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.db.models.functions import Length
-
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Avg
 
 class Venue(models.Model):
     name = models.TextField()
@@ -10,6 +11,13 @@ class Venue(models.Model):
 
     def __str__(self):
         return self.name
+
+    def average_score(self):
+        return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
+
+    def get_score_image_url(self):
+        avg_score = self.average_score()
+        return f"/media/images/assets/score{avg_score}.png"
 
 
 class Event(models.Model):
@@ -60,8 +68,17 @@ class Artist(models.Model):
 
 
 class VenueReview(models.Model):
-    #author = models.ForeignKey('User', on_delete=models.CASCADE)
     text = models.TextField()
+    score = models.IntegerField(validators=[MaxValueValidator(10), MinValueValidator(0)])
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='reviews')
+    date = models.DateField()
+
+    def get_score_image_url(self):
+        return f"/media/images/assets/score{self.score}.png"
+
+    def __str__(self):
+        return f"{self.score}: {self.text[:10]}..."
+
 
 
 

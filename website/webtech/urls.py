@@ -13,5 +13,4 @@ urlpatterns = [
     path('venues/<int:venue_id>', views.venue_page, name='venue_page'),
 
     path('scrape/', views.scrape, name='scrape')
-
 ]
