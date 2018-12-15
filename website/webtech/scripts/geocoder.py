@@ -24,7 +24,6 @@ class Geocoder:
 
 # using OpenCage geocoding, addresses in Brussels are returned as "French name - Dutch name"
 def address_convert(address):
-    print(address)
     street, town, country = address.split(', ')[-3:]
     postal_code = int(town[:4])
     if len(street.split(' - ')) > 1:
