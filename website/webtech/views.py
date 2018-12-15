@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm
 from .models import Venue, Event, Genre, Artist, Preview
+from .scripts.geocoder import Geocoder
 import requests
 from math import ceil
 
@@ -24,7 +25,7 @@ def index(request):
     page_n = int(request.GET.get('p', 1))
     page_n = 1 if page_n == 0 else page_n
     search_results_events = []
-    
+
     last_page_post_data = None
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
@@ -159,6 +160,60 @@ def add_event_form_test(request):
     context['form'] = form
 
     return render(request, 'add_event_form.html', context)
+
+def scrapelastfm(request):
+    from .scripts.scrapers.lastfm_scraper import LastfmScraper
+    from PIL import Image
+    from io import BytesIO
+    from django.core.files.base import ContentFile
+
+    Event.objects.all().delete()
+    Artist.objects.all().delete()
+    Preview.objects.all().delete()
+    Genre.objects.all().delete()
+    Venue.objects.all().delete()
+
+    def django_image_from_url(url):
+        response = requests.get(url)
+        image = Image.open(BytesIO(response.content))
+        file = BytesIO()
+        image.save(file, 'JPEG')
+        file.seek(0)
+        image_name = url.split("/")[-1]
+        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
+            image_name += '.jpg'
+        return ContentFile(file.read(), image_name)
+
+    scraped = LastfmScraper(Geocoder())
+
+    for venue in scraped.venues:
+        venue_object, created = Venue.objects.get_or_create(
+                name=venue.name,
+                point=venue.point,
+                address_fr=venue.address_fr,
+                address_nl=venue.address_nl
+                )
+        if not created:
+            venue_object.save()
+
+    for event in scraped.events:
+        event_object = Event(
+                name=event.name,
+                venue=Venue.objects.get(name=event.venue.name),
+                image=django_image_from_url(event.image) if event.image else None,
+                official_page=event.official_page,
+                datetime=event.datetime
+                )
+        event_object.save()
+
+    for artist in scraped.artists:
+        artist_object, _ = Artist.objects.get_or_create(name=artist.name)
+        for event in artist.events:
+            event_object = Event.objects.get(name=event.name)
+            artist_object.events.add(event_object)
+        artist_object.save()
+
+    return HttpResponse("OK")
 
 
 def scrape(request):
