@@ -30,12 +30,29 @@
             <p class="lead" style="font-size: 13pt">
                 {{ venue.description }}
             </p>
+            <h5 class="">Reviews:  </h5>
+            <div class="row container pb-2 pt-2 pl-2">
+                <img class="float-left p-1" src={{ venue.get_score_image_url }} style="height: 80px; width: 80px">
 
-            <dl>
-                <dt class="">Reviews:</dt>
-                ...
-            </dl>
-
+                <button type="button" class="btn btn-primary my-auto" data-toggle="modal" data-target="#reviewModal" data-venue="{{ venue }}" style="height: 40px; ">
+                    Write a review
+                </button>
+            </div>
+            <div class="pt-2" style="overflow-y: scroll; height:410px;">
+                {% for review in venue.reviews.all %}
+                <div class="row venue-review mb-2" style="height: 100px">
+                    <blockquote class="blockquote card-body">
+                        <img class="float-left p-1" src={{ review.get_score_image_url }} style="height: 42px; width: 42px">
+                        <p style="height:38px; padding-left: 5px; font-size: 11pt; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ review.text }}</p>
+                        <footer class="blockquote-footer">
+                            <small class="text-muted">
+                                Arthur Van Remoortel {{ review.date }}
+                            </small>
+                        </footer>
+                    </blockquote>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         <div class="col-md-6">
@@ -52,9 +69,63 @@
     </div>
 </div>
 
-
 </body>
+
+<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 id="review-modal-title" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="lead">
+                        Please provide usefull information about your experience with this venue.
+                    </p>
+                    <div class="form-group">
+                        {% render_field review_form.text class="form-control" %}
+                    </div>
+                    <label>Rating</label>
+                    <div class="form-row" style="">
+                        <div class="col-11">
+                            {% render_field review_form.score id="rating-slider" class="custom-range" min="0" max="10" value=10 %}
+                        </div>
+                        <div class="col-1 my-auto">
+                            <img id="rating-slider-img" src="/media/images/assets/score10.png" style="height: 30px; width: 30px">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 </html>
+
+{% block javascript %}
+<script>
+    var rating_slider = document.getElementById("rating-slider");
+    var rating_slider_img = document.getElementById("rating-slider-img");
+    rating_slider.oninput = function() {
+        rating_slider_img.src = "/media/images/assets/score"+ this.value + ".png"
+    };
+    $('#reviewModal').on('show.bs.modal', function (btn) {
+        let button = $(btn.relatedTarget);
+        let venue = button.data('venue');
+        document.getElementById("review-modal-title").innerHTML = venue;
+
+    })
+</script>
+{% endblock %}
 
 {% endblock %}
 

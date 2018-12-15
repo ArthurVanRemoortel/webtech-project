@@ -1,6 +1,9 @@
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
 from .models import Venue
+from django.forms.widgets import NumberInput
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 
 
 class EventFilterForm(forms.Form):
@@ -29,8 +32,8 @@ class AddEventToVenueForm(forms.Form):
         super(AddEventToVenueForm, self).__init__(*args, **kwargs)
 
     event_name = forms.CharField(max_length=100)
-    venue = forms.ChoiceField( # TODO: Only show venues linked to the users account.
-        choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
+    venue = forms.ChoiceField(  # TODO: Only show venues linked to the users account.
+        # choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
     )
     artists = forms.CharField(max_length=100)
     description = forms.CharField(widget=forms.Textarea)
@@ -43,6 +46,11 @@ class AddEventToVenueForm(forms.Form):
     preview_links = forms.CharField(widget=forms.Textarea)
     event_image = forms.ImageField()
 
+
+class ReviewForm(forms.Form):
+    text = forms.CharField(widget=forms.Textarea)
+    score = forms.IntegerField(widget=NumberInput(attrs={'type': 'range'}),
+                               validators=[MaxValueValidator(10), MinValueValidator(0)])
 
 class MapForm(forms.Form):
     search_string = forms.CharField()

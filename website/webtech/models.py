@@ -1,5 +1,7 @@
 from django.contrib.gis.db import models
 from django.db.models.functions import Length
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Avg
 from decimal import Decimal
 
 from .scripts.geocoder import Geocoder
@@ -11,7 +13,7 @@ class Venue(models.Model):
     address_fr = models.TextField(default='')
     address_nl = models.TextField(default='')
     description = models.TextField()
-    image = models.ImageField(upload_to='images', default='default.png')
+    image = models.ImageField(upload_to='images/uploaded', default='default.png')
 
     def save(self, *args, **kwargs):
         if not (self.address_fr and self.address_nl):
@@ -24,6 +26,13 @@ class Venue(models.Model):
     def __str__(self):
         return self.name
 
+    def average_score(self):
+        return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
+
+    def get_score_image_url(self):
+        avg_score = self.average_score()
+        return f"/media/images/assets/score{avg_score}.png"
+
 
 class Event(models.Model):
     name = models.CharField(max_length=100)
@@ -34,7 +43,7 @@ class Event(models.Model):
     previews = models.ManyToManyField('Preview')
     datetime = models.DateTimeField()
     genres = models.ManyToManyField('Genre')
-    image = models.ImageField(upload_to='images', default='images/default.png')
+    image = models.ImageField(upload_to='images/uploaded', default='images/default.png')
 
     def short_genres_list(self):
         characters_len = 0
@@ -78,8 +87,14 @@ class Artist(models.Model):
 
 
 class VenueReview(models.Model):
-    #author = models.ForeignKey('User', on_delete=models.CASCADE)
     text = models.TextField()
+    score = models.IntegerField(validators=[MaxValueValidator(10), MinValueValidator(0)])
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='reviews')
+    date = models.DateField()
 
+    def get_score_image_url(self):
+        return f"/media/images/assets/score{self.score}.png"
 
+    def __str__(self):
+        return f"{self.score}: {self.text[:10]}..."
 

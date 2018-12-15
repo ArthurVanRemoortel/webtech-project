@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm
-from .models import Venue, Event, Genre, Artist, Preview
+from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm, ReviewForm
+from .models import Venue, Event, Genre, Artist, Preview, VenueReview
 from .scripts.geocoder import Geocoder
+from django.utils import timezone
 import requests
 from math import ceil
-
+from .helpers import LOREM_2_P, erase_everything #django_image_from_url
+from random import randint
 
 def is_artist_on_lastfm(artist):
     api_key = "21be84da5456cdad7c3f91947422f8ad"
@@ -88,6 +90,7 @@ def bookmark_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     return HttpResponse("OK")
 
+
 def event_page(request, event_id):
     event = Event.objects.get(pk=event_id)
     context = {'event': event}
@@ -96,13 +99,19 @@ def event_page(request, event_id):
 
 def venue_page(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
-    venue_events_pairs = []
-    for i, item in enumerate(Event.objects.filter(venue=venue_id)):
-        if i % 2 == 0:
-            venue_events_pairs.append([])
-        venue_events_pairs[-1].append(item)
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            text = review_form.cleaned_data['text']
+            score = review_form.cleaned_data['score']
+            review = VenueReview(text=text, score=score, venue=venue, date=timezone.now())
+            review.save()
+
+    else:
+        review_form = ReviewForm()
+
     context = {'venue': venue,
-               'venue_events_pairs': venue_events_pairs
+               'review_form': review_form
                }
     return render(request, 'venue.html', context)
 
@@ -233,12 +242,7 @@ def scrape(request):
     from PIL import Image
     from io import BytesIO
     from django.core.files.base import ContentFile
-
-    Event.objects.all().delete()
-    Artist.objects.all().delete()
-    Preview.objects.all().delete()
-    Genre.objects.all().delete()
-    Venue.objects.all().delete()
+    import requests
 
     def django_image_from_url(url):
         response = requests.get(url)
@@ -251,13 +255,24 @@ def scrape(request):
             image_name += '.jpg'
         return ContentFile(file.read(), image_name)
 
+    Event.objects.all().delete()
+    Artist.objects.all().delete()
+    Preview.objects.all().delete()
+    Genre.objects.all().delete()
+    Venue.objects.all().delete()
+
     for scraper in [FlageyScraper(), ABScraper()]:
-        venue_object, _ = Venue.objects.get_or_create(
+        venue_object, is_new_venue = Venue.objects.get_or_create(
             name=scraper.venue_name,
             address_string=scraper.venue_addres,
             description=scraper.description,
             image=django_image_from_url(scraper.venue_image)
         )
+        if is_new_venue:
+            # Is the venue is new, write some reviews for them.
+            for i in range(7):
+                review = VenueReview(text=LOREM_2_P, score=randint(0, 10), venue=venue_object, date=timezone.now())
+                review.save()
 
         results = scraper.start_scrape(limit_results=False)
         for event_dict in results:
@@ -272,11 +287,10 @@ def scrape(request):
                                  price=event_dict['event_price'],
                                  image=image,
                                  official_page=event_dict['event_url'],
-                                 datetime=event_dict['event_datetime']
-                                 )
+                                 datetime=event_dict['event_datetime'])
             event_object.save()
 
-            # IMPORANT: !!! No artists are currently scraped from an event. For testing purposes only, asume the event title is the artist.
+            # No artists are currently scraped from an event. For testing purposes only, asume the event title is the artist.
             # This will not be accurate, but good enough for demonstration.
             for artist in [event_name]:
                 artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]  # feat. in a title can mean the the band name was before it.
