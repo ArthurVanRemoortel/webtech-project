@@ -122,11 +122,21 @@ def add_venue_form_test(request):
         if form.is_valid():
             venue_name = form.cleaned_data['venue_name']
             address = form.cleaned_data['address']
-            description = form.cleaned_data['description']
-            venue_image = form.cleaned_data['venue_image']
-            time = None
-            venue_instance = Venue(name=venue_name, address_string=address, description=description, image=venue_image)
-            venue_instance.save()
+            try:
+                point, address_fr, address_nl = Geocoder().geocode(address)
+                description = form.cleaned_data['description']
+                venue_image = form.cleaned_data['venue_image']
+                venue_instance = Venue(
+                        name=venue_name,
+                        point=point,
+                        address_fr=address_fr,
+                        address_nl=address_nl,
+                        description=description,
+                        image=venue_image
+                        )
+                venue_instance.save()
+            except ValueError:
+                form = AddVenueForm()
     else:
         form = AddVenueForm()
     context['form'] = form
@@ -197,6 +207,7 @@ def scrapelastfm(request):
             venue_object.save()
 
     for event in scraped.events:
+        print("scraped ", event.name)
         event_object = Event(
                 name=event.name,
                 venue=Venue.objects.get(name=event.venue.name),
