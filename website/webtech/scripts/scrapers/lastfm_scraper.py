@@ -4,7 +4,7 @@ from django.contrib.gis.geos.point import Point
 import pytz
 
 
-cet = pytz.timezone('Europe/Brussels')
+brussels_time = pytz.timezone('Europe/Brussels')
 
 
 class LastfmScraper:
@@ -45,8 +45,7 @@ class LastfmScraper:
             link = url_base + event.children().attr('href')
             event_dom = htmldom.HtmlDom(link).createDom()
             name = event_dom.find('h1.header-title').text().strip()
-            print("event name: ", name)
-            artists = [x.getText() for x in event_dom.find('p.header-title-secondary').find('a').toList()]
+            artists = self.get_or_create_artists(event_dom)
             img_link = self.get_img_link(event_dom)
             official_page = self.get_official_page(event_dom)
             dt = self.get_datetime(event_dom)
@@ -54,14 +53,12 @@ class LastfmScraper:
             lastfm_event = self.LastfmEvent(name, lastfm_venue, img_link, official_page, dt)
             self.events.append(lastfm_event)
             for artist in artists:
-                lastfm_artist = self.artist_dict.get(artist)
-                if not lastfm_artist:
-                    lastfm_artist = self.LastfmArtist(artist)
-                    self.artist_dict[artist] = lastfm_artist
-                lastfm_artist.add(lastfm_event)
+                artist.add(lastfm_event)
 
         self.venues = self.venue_dict.values()
         self.artists = self.artist_dict.values()
+        for x in self.events:
+            print(x.name)
 
     def get_or_create_venue(self, dom):
         venue_info = dom.find('p.event-detail-address')
@@ -75,6 +72,14 @@ class LastfmScraper:
             venue = self.LastfmVenue(name, location)
             self.venue_dict[name] = venue
             return venue
+
+    def get_or_create_artists(self, dom):
+        artist_dom = dom.find('ol.grid-items')
+        artists = [x.getText() for x in artist_dom.find('div.grid-items-item-details').find('a').toList()]
+        for artist in artists:
+            if not self.artist_dict.get(artist):
+                self.artist_dict[artist] = self.LastfmArtist(artist)
+        return [self.artist_dict.get(artist) for artist in artists]
 
     def get_img_link(self, dom):
         img_link = dom.find('div#event-poster-full-width').find('img').attr('src') + '.jpg'
@@ -91,12 +96,14 @@ class LastfmScraper:
         year, month, day = (int(x) for x in ymd.split('-'))
         try:
             time = dom.find('p.qa-event-date span').children().last().text()
-            hour, minute = (int(x) for x in time[:5].split(':'))
-            if time[5:] == 'pm':
+            hour, minute = (int(x) for x in time[:-2].split(':'))
+            if time[-2:] == 'pm':
                 hour += 12
-            return datetime(year, month, day, hour, minute, tzinfo=cet)
+            # important to use .astimezone(...) to get CET offset
+            # and not datetime(..., tzinfo=...) which get BST offset for some reason
+            return datetime(year, month, day, hour, minute).astimezone(brussels_time)
         except:
-            return datetime(year, month, day, tzinfo=cet)
+            return datetime(year, month, day).astimezone(brussels_time)
 
 
 #dom = htmldom.HtmlDom(url).createDom()
