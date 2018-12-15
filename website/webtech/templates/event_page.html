@@ -54,8 +54,11 @@
                 <dd class="ml-3">{{ event.datetime }}</dd>
 
 
-                <dt class="ml-3">Price:</dt>
-                <dd class="ml-3">€ {{ event.price }}</dd>
+                {% if event.price != None %}
+                    <dt class="ml-3">Price:</dt>
+                    <dd class="ml-3">€ {{ event.price }}</dd>
+                {% endif %}
+
                 <dt class="ml-3">Artist(s):</dt>
                 {% for artist in event.artist_set.all %}
                 <dd class="ml-3 mb-0">

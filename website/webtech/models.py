@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.db.models.functions import Length
+from decimal import Decimal
 
 from .scripts.geocoder import Geocoder
 
@@ -33,7 +34,7 @@ class Event(models.Model):
     previews = models.ManyToManyField('Preview')
     datetime = models.DateTimeField()
     genres = models.ManyToManyField('Genre')
-    image = models.ImageField(upload_to='images', default='default.png')
+    image = models.ImageField(upload_to='images', default='images/default.png')
 
     def short_genres_list(self):
         characters_len = 0
@@ -45,6 +46,11 @@ class Event(models.Model):
             else:
                 break
         return passed_genres
+
+    def save(self, *args, **kwargs):
+        if self.price and type(self.price) != Decimal:
+            self.price = Decimal(self.price).quantize(Decimal("0.00"))
+        super(Event, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
