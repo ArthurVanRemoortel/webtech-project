@@ -193,7 +193,7 @@ def scrape(request):
     Artist.objects.all().delete()
     Preview.objects.all().delete()
     Genre.objects.all().delete()
-    # Venue.objects.all().delete()
+    Venue.objects.all().delete()
 
     for scraper in [FlageyScraper(), ABScraper()]:
         venue_object, is_new_venue = Venue.objects.get_or_create(

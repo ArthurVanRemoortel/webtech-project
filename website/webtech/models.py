@@ -7,7 +7,7 @@ class Venue(models.Model):
     name = models.TextField()
     address_string = models.TextField()
     description = models.TextField()
-    image = models.ImageField(upload_to='images')
+    image = models.ImageField(upload_to='images/uploaded')
 
     def __str__(self):
         return self.name
@@ -25,7 +25,7 @@ class Event(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     description = models.TextField()
     price = models.FloatField()
-    image = models.ImageField(upload_to='images')
+    image = models.ImageField(upload_to='images/uploaded')
     official_page = models.TextField()
     previews = models.ManyToManyField('Preview')
     datetime = models.DateTimeField()
