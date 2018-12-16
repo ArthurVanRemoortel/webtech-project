@@ -12,6 +12,7 @@ class Geocoder:
         def __init__(self, location):
             self.point = Point(location.latitude, location.longitude)
             self.address_fr, self.address_nl = address_convert(location.address)
+
         def __iter__(self):
             return iter((self.address_fr, self.address_nl, self.point))
 

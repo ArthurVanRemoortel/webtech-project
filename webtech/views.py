@@ -6,18 +6,21 @@ from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
-from .helpers import LOREM_2_P, erase_everything #django_image_from_url
+from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file
 from random import randint
 
 def is_artist_on_lastfm(artist):
-    api_key = "21be84da5456cdad7c3f91947422f8ad"
-    artist.replace(" ", "%20")
-    url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key={api_key}&format=json"
-    r = requests.get(url).json()
-    if 'error' in r:
+    try:
+        api_key = "21be84da5456cdad7c3f91947422f8ad"
+        artist.replace(" ", "%20")
+        url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key={api_key}&format=json"
+        r = requests.get(url).json()
+        if 'error' in r:
+            return False
+        # TODO: Verify if it actually contains usefull data.
+        return True
+    except:
         return False
-    # TODO: Verify if it actually contains usefull data.
-    return True
 
 
 def index(request):
@@ -27,8 +30,8 @@ def index(request):
     page_n = int(request.GET.get('p', 1))
     page_n = 1 if page_n == 0 else page_n
     search_results_events = []
-
     last_page_post_data = None
+    filter_div_open = False
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -51,8 +54,10 @@ def index(request):
             range_unit = form.cleaned_data['range_unit']
             search_results_events = Event.objects.filter(name__contains=event_title)
             if date:
-                search_results_events = search_results_events.filter(datetime=date)
+                filter_div_open = True
+                search_results_events = search_results_events.filter(datetime__date=date)
             if genres:
+                filter_div_open = True
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
 
             request.session['current-search'] = request.POST
@@ -66,7 +71,7 @@ def index(request):
         search_results_events = Event.objects.all()
 
     pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
-    search_results_events = search_results_events[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
+    search_results_events = search_results_events.order_by('datetime')[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
     # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
     search_results = []
     for i, item in enumerate(search_results_events):
@@ -81,7 +86,8 @@ def index(request):
         'page_n': page_n,
         'pages': pages,
         'form': form,
-        'all_genres': all_genres
+        'all_genres': all_genres,
+        'filter_div_open': filter_div_open
     }
     return render(request, 'index.html', context)
 
@@ -132,17 +138,17 @@ def add_venue_form_test(request):
             venue_name = form.cleaned_data['venue_name']
             address = form.cleaned_data['address']
             try:
-                point, address_fr, address_nl = Geocoder().geocode(address)
+                address_fr, address_nl, point = Geocoder().geocode(address)
                 description = form.cleaned_data['description']
                 venue_image = form.cleaned_data['venue_image']
                 venue_instance = Venue(
-                        name=venue_name,
-                        point=point,
-                        address_fr=address_fr,
-                        address_nl=address_nl,
-                        description=description,
-                        image=venue_image
-                        )
+                    name=venue_name,
+                    point=point,
+                    address_fr=address_fr,
+                    address_nl=address_nl,
+                    description=description,
+                    image=venue_image
+                )
                 venue_instance.save()
             except ValueError:
                 form = AddVenueForm()
@@ -182,9 +188,6 @@ def add_event_form_test(request):
 
 def scrapelastfm(request):
     from .scripts.scrapers.lastfm_scraper import LastfmScraper
-    from PIL import Image
-    from io import BytesIO
-    from django.core.files.base import ContentFile
 
     Event.objects.all().delete()
     Artist.objects.all().delete()
@@ -192,42 +195,39 @@ def scrapelastfm(request):
     Genre.objects.all().delete()
     Venue.objects.all().delete()
 
-    def django_image_from_url(url):
-        response = requests.get(url)
-        image = Image.open(BytesIO(response.content))
-        file = BytesIO()
-        image.save(file, 'JPEG')
-        file.seek(0)
-        image_name = url.split("/")[-1]
-        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
-            image_name += '.jpg'
-        return ContentFile(file.read(), image_name)
-
     scraped = LastfmScraper(Geocoder())
 
     for venue in scraped.venues:
         venue_object, created = Venue.objects.get_or_create(
-                name=venue.name,
-                point=venue.point,
-                address_fr=venue.address_fr,
-                address_nl=venue.address_nl
-                )
+            name=venue.name,
+            point=venue.point,
+            address_fr=venue.address_fr,
+            address_nl=venue.address_nl,
+            description=LOREM_1_P,
+            image=django_image_from_file('images/default_venue.png')
+        )
         if not created:
             venue_object.save()
+        else:
+            # Is the venue is new, write some reviews for them.
+            for i in range(7):
+                review = VenueReview(text=LOREM_2_P, score=randint(0, 10), venue=venue_object, date=timezone.now())
+                review.save()
 
     for event in scraped.events:
-        print("scraped ", event.name)
         event_object = Event(
-                name=event.name,
-                venue=Venue.objects.get(name=event.venue.name),
-                image=django_image_from_url(event.image) if event.image else Event.image.field.default,
-                official_page=event.official_page,
-                datetime=event.datetime
-                )
+            name=event.name,
+            venue=Venue.objects.get(name=event.venue.name),
+            image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
+            official_page=event.official_page,
+            description=LOREM_1_P,
+            datetime=event.datetime
+        )
         event_object.save()
 
     for artist in scraped.artists:
-        artist_object, _ = Artist.objects.get_or_create(name=artist.name)
+        last_fm_exists = is_artist_on_lastfm(artist.name)
+        artist_object, _ = Artist.objects.get_or_create(name=artist.name, last_fm_entry_exists=last_fm_exists)
         for event in artist.events:
             event_object = Event.objects.get(name=event.name)
             artist_object.events.add(event_object)
@@ -239,21 +239,6 @@ def scrapelastfm(request):
 def scrape(request):
     from .scripts.scrapers.flagey_scraper import FlageyScraper
     from .scripts.scrapers.ab_scraper import ABScraper
-    from PIL import Image
-    from io import BytesIO
-    from django.core.files.base import ContentFile
-    import requests
-
-    def django_image_from_url(url):
-        response = requests.get(url)
-        image = Image.open(BytesIO(response.content))
-        file = BytesIO()
-        image.save(file, 'JPEG')
-        file.seek(0)
-        image_name = url.split("/")[-1]
-        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
-            image_name += '.jpg'
-        return ContentFile(file.read(), image_name)
 
     Event.objects.all().delete()
     Artist.objects.all().delete()
@@ -262,11 +247,14 @@ def scrape(request):
     Venue.objects.all().delete()
 
     for scraper in [FlageyScraper(), ABScraper()]:
+        address_fr, address_nl, point = Geocoder().geocode(scraper.venue_addres)
         venue_object, is_new_venue = Venue.objects.get_or_create(
             name=scraper.venue_name,
-            address_string=scraper.venue_addres,
+            point=point,
+            address_fr=address_fr,
+            address_nl=address_nl,
             description=scraper.description,
-            image=django_image_from_url(scraper.venue_image)
+            image=django_image_from_url(scraper.venue_image),
         )
         if is_new_venue:
             # Is the venue is new, write some reviews for them.

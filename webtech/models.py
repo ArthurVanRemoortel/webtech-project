@@ -13,7 +13,7 @@ class Venue(models.Model):
     address_fr = models.TextField(default='')
     address_nl = models.TextField(default='')
     description = models.TextField()
-    image = models.ImageField(upload_to='images/uploaded', default='default.png')
+    image = models.ImageField(upload_to='images/uploaded')
 
     def save(self, *args, **kwargs):
         if not (self.address_fr and self.address_nl):
@@ -35,15 +35,15 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=100)
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200)
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='events')
     description = models.TextField(default='')
     price = models.DecimalField(decimal_places=2, max_digits=7, null=True)
     official_page = models.CharField(max_length=200, default='')
-    previews = models.ManyToManyField('Preview')
+    previews = models.ManyToManyField('Preview', related_name='events')
     datetime = models.DateTimeField()
-    genres = models.ManyToManyField('Genre')
-    image = models.ImageField(upload_to='images/uploaded', default='images/default.png')
+    genres = models.ManyToManyField('Genre', related_name='events')
+    image = models.ImageField(upload_to='images/uploaded')
 
     def short_genres_list(self):
         characters_len = 0
@@ -69,6 +69,9 @@ class Preview(models.Model):
     url = models.TextField()
     type = models.CharField(max_length=20)
 
+    def __str__(self):
+        return f"{self.type}: {self.url}"
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=20)
@@ -79,7 +82,7 @@ class Genre(models.Model):
 
 class Artist(models.Model):
     name = models.CharField(max_length=100)
-    events = models.ManyToManyField('Event')
+    events = models.ManyToManyField('Event', related_name='artists')
     last_fm_entry_exists = models.BooleanField(default=False)
 
     def __str__(self):
@@ -96,5 +99,5 @@ class VenueReview(models.Model):
         return f"/media/images/assets/score{self.score}.png"
 
     def __str__(self):
-        return f"{self.score}: {self.text[:10]}..."
+        return f"{self.score}: {self.text[:15]}..."
 
