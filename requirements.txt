@@ -1,0 +1,8 @@
+django
+gunicorn
+django-heroku
+django-bootstrap4
+django-bootstrap-datepicker-plus
+django-cleanup
+geopy
+htmldom
