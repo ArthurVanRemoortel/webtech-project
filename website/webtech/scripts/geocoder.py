@@ -43,6 +43,7 @@ def address_convert(address):
     # the order has to be reversed
     if 1000 <= postal_code < 1300:
         return (street_fr + ', ' + town_fr, street_nl + ', ' + town_nl)
+    else:
         return (street_nl + ', ' + town_nl, street_fr + ', ' + town_fr)
 
 
