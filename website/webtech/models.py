@@ -13,7 +13,7 @@ class Venue(models.Model):
     address_fr = models.TextField(default='')
     address_nl = models.TextField(default='')
     description = models.TextField()
-    image = models.ImageField(upload_to='images/uploaded', default='default.png')
+    image = models.ImageField(upload_to='images/uploaded', default='images/default.png')
 
     def save(self, *args, **kwargs):
         if not (self.address_fr and self.address_nl):
@@ -27,7 +27,11 @@ class Venue(models.Model):
         return self.name
 
     def average_score(self):
-        return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
+        score__avg = VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg']
+        if score__avg:
+            return int(round(score__avg, 0))
+        else:
+            return None
 
     def get_score_image_url(self):
         avg_score = self.average_score()
