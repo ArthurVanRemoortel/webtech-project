@@ -30,8 +30,8 @@ def index(request):
     page_n = int(request.GET.get('p', 1))
     page_n = 1 if page_n == 0 else page_n
     search_results_events = []
-
     last_page_post_data = None
+    filter_div_open = False
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -54,8 +54,10 @@ def index(request):
             range_unit = form.cleaned_data['range_unit']
             search_results_events = Event.objects.filter(name__contains=event_title)
             if date:
+                filter_div_open = True
                 search_results_events = search_results_events.filter(datetime__date=date)
             if genres:
+                filter_div_open = True
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
 
             request.session['current-search'] = request.POST
@@ -84,7 +86,8 @@ def index(request):
         'page_n': page_n,
         'pages': pages,
         'form': form,
-        'all_genres': all_genres
+        'all_genres': all_genres,
+        'filter_div_open': filter_div_open
     }
     return render(request, 'index.html', context)
 

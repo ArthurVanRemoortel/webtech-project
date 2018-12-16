@@ -36,13 +36,13 @@ class Venue(models.Model):
 
 class Event(models.Model):
     name = models.CharField(max_length=200)
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='events')
     description = models.TextField(default='')
     price = models.DecimalField(decimal_places=2, max_digits=7, null=True)
     official_page = models.CharField(max_length=200, default='')
-    previews = models.ManyToManyField('Preview')
+    previews = models.ManyToManyField('Preview', related_name='events')
     datetime = models.DateTimeField()
-    genres = models.ManyToManyField('Genre')
+    genres = models.ManyToManyField('Genre', related_name='events')
     image = models.ImageField(upload_to='images/uploaded')
 
     def short_genres_list(self):
@@ -79,7 +79,7 @@ class Genre(models.Model):
 
 class Artist(models.Model):
     name = models.CharField(max_length=100)
-    events = models.ManyToManyField('Event')
+    events = models.ManyToManyField('Event', related_name='artists')
     last_fm_entry_exists = models.BooleanField(default=False)
 
     def __str__(self):
