@@ -27,11 +27,7 @@ class Venue(models.Model):
         return self.name
 
     def average_score(self):
-        score__avg = VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg']
-        if score__avg:
-            return int(round(score__avg, 0))
-        else:
-            return None
+        return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
 
     def get_score_image_url(self):
         avg_score = self.average_score()
