@@ -82,7 +82,13 @@ WSGI_APPLICATION = 'bxllive.wsgi.application'
 
 import dj_database_url
 
-DATABASES = {'default': dj_database_url.config(conn_max_age=600, ssl_require=True)}
+DATABASES = {
+        'default': dj_database_url.config(
+            os.environ.get('POSTGIS_URL'),
+            conn_max_age=600,
+            ssl_require=True
+            )
+        }
 
 #DATABASES = {
 #    'default': {
