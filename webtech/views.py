@@ -198,18 +198,17 @@ def scrapelastfm(request):
     scraped = LastfmScraper(Geocoder())
 
     for venue in scraped.venues:
-        venue_object, created = Venue.objects.get_or_create(
-            name=venue.name,
-            point=venue.point,
-            address_fr=venue.address_fr,
-            address_nl=venue.address_nl,
-            description=LOREM_1_P,
-            image=django_image_from_file('images/default_venue.png')
-        )
-        if not created:
+        venue_object = Venue.objects.filter(name=venue.name)
+        if not venue_object:
+            venue_object = Venue(
+                name=venue.name,
+                point=venue.point,
+                address_fr=venue.address_fr,
+                address_nl=venue.address_nl,
+                description=LOREM_1_P,
+                image=django_image_from_file('images/default_venue.png')
+            )
             venue_object.save()
-        else:
-            # Is the venue is new, write some reviews for them.
             for i in range(7):
                 review = VenueReview(text=LOREM_2_P, score=randint(0, 10), venue=venue_object, date=timezone.now())
                 review.save()
