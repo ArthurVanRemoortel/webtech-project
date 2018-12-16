@@ -214,6 +214,11 @@ def scrapelastfm(request):
                 )
         if not created:
             venue_object.save()
+        else:
+            # Is the venue is new, write some reviews for them.
+            for i in range(7):
+                review = VenueReview(text=LOREM_2_P, score=randint(0, 10), venue=venue_object, date=timezone.now())
+                review.save()
 
     for event in scraped.events:
         print("scraped ", event.name)
