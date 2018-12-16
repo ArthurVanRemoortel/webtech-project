@@ -35,7 +35,7 @@ class Venue(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     description = models.TextField(default='')
     price = models.DecimalField(decimal_places=2, max_digits=7, null=True)
