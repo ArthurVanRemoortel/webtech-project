@@ -4,7 +4,6 @@ django-bootstrap4
 django-bootstrap-datepicker-plus
 django-cleanup
 django-widget-tweaks
-GDAL
 geopy
 gunicorn
 htmldom
