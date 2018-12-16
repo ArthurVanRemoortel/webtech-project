@@ -25,19 +25,23 @@ class Geocoder:
 
 # using OpenCage geocoding, addresses in Brussels are returned as "French name - Dutch name"
 def address_convert(address):
+
     street, town, country = address.split(', ')[-3:]
     postal_code = int(town[:4])
+
     if len(street.split(' - ')) > 1:
         street_fr, street_nl = street.split(' - ')
         # get street number
         street_fr += ' ' + street_nl.split(' ')[-1]
     else:
         street_fr = street_nl = street
+
     if len(town.split(' - ')) > 1:
         town_fr, town_nl = town.split(' - ')
         town_nl = str(postal_code) + ' ' + town_nl
     else:
         town_fr = town_nl = town
+
     # if location is in Brussels Capital Region, order will be correct
     # otherwise assume it's nearby town in Flemish Brabant, in which case the
     # the order has to be reversed

@@ -1,0 +1,13 @@
+django
+django-heroku
+django-bootstrap4
+django-bootstrap-datepicker-plus
+django-cleanup
+django-widget-tweaks
+dj_database_url
+geopy
+gunicorn
+htmldom
+Pillow
+pytz
+requests

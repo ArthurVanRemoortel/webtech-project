@@ -32,7 +32,7 @@ class AddEventToVenueForm(forms.Form):
 
     event_name = forms.CharField(max_length=100)
     venue = forms.ChoiceField(  # TODO: Only show venues linked to the users account.
-        # choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
+        choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
     )
     artists = forms.CharField(max_length=100)
     description = forms.CharField(widget=forms.Textarea)
