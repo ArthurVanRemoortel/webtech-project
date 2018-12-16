@@ -1,2 +1,2 @@
 release: bash migrate.sh
-web: gunicorn gettingstarted.wsgi --log-file -
+web: gunicorn bxllive.wsgi --log-file -
