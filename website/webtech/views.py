@@ -6,18 +6,21 @@ from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
-from .helpers import LOREM_2_P, erase_everything #django_image_from_url
+from .helpers import LOREM_2_P, LOREM_1_P, erase_everything #django_image_from_url
 from random import randint
 
 def is_artist_on_lastfm(artist):
-    api_key = "21be84da5456cdad7c3f91947422f8ad"
-    artist.replace(" ", "%20")
-    url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key={api_key}&format=json"
-    r = requests.get(url).json()
-    if 'error' in r:
+    try:
+        api_key = "21be84da5456cdad7c3f91947422f8ad"
+        artist.replace(" ", "%20")
+        url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist={artist}&api_key={api_key}&format=json"
+        r = requests.get(url).json()
+        if 'error' in r:
+            return False
+        # TODO: Verify if it actually contains usefull data.
+        return True
+    except:
         return False
-    # TODO: Verify if it actually contains usefull data.
-    return True
 
 
 def index(request):
@@ -219,6 +222,7 @@ def scrapelastfm(request):
                 point=venue.point,
                 address_fr=venue.address_fr,
                 address_nl=venue.address_nl,
+                description=LOREM_1_P,
                 image=django_image_from_file('images/default_venue.png')
                 )
         if not created:
@@ -235,11 +239,14 @@ def scrapelastfm(request):
                 venue=Venue.objects.get(name=event.venue.name),
                 image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
                 official_page=event.official_page,
-                datetime=event.datetime)
+                description=LOREM_1_P,
+                datetime=event.datetime
+        )
         event_object.save()
 
     for artist in scraped.artists:
-        artist_object, _ = Artist.objects.get_or_create(name=artist.name)
+        last_fm_exists = is_artist_on_lastfm(artist.name)
+        artist_object, _ = Artist.objects.get_or_create(name=artist.name, last_fm_entry_exists=last_fm_exists)
         for event in artist.events:
             event_object = Event.objects.get(name=event.name)
             artist_object.events.add(event_object)
