@@ -82,21 +82,18 @@ WSGI_APPLICATION = 'bxllive.wsgi.application'
 
 import dj_database_url
 
-DATABASES = {
-        'default': dj_database_url.config(
-            os.environ.get('POSTGIS_URL'),
-            conn_max_age=600,
-            ssl_require=True
-            )
-        }
+#DATABASES = {'default': dj_database_url.config(conn_max_age=600, ssl_require=True)}
+#DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+#postgis://frxjzmotvowaxv:8e4c576f111823d541f3e30930463d46eec1a86bd72c82de91e283fc3e561ed6@ec2-54-247-102-1.eu-west-1.compute.amazonaws.com:5432/d2mme2ump5rf6m
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-#        'NAME': 'database',
-#        'USER': 'webtech',
-#    },
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'd2mme2ump5rf6m',
+        'HOST': 'ec2-54-247-102-1.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432',
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
