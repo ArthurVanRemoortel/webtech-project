@@ -1,6 +1,12 @@
 .DS_Store
 __pycache__
 .idea
-.*.swp
-website/images/uploaded
-*/migrations
+
+# no vim swap files
+*.swp
+
+# app migrations are local database dependent
+*/migrations/
+
+# no user uploaded content
+media/
