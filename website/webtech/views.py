@@ -54,7 +54,7 @@ def index(request):
             range_unit = form.cleaned_data['range_unit']
             search_results_events = Event.objects.filter(name__contains=event_title)
             if date:
-                search_results_events = search_results_events.filter(datetime=date)
+                search_results_events = search_results_events.filter(datetime__date=date)
             if genres:
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
 
@@ -69,7 +69,7 @@ def index(request):
         search_results_events = Event.objects.all()
 
     pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
-    search_results_events = search_results_events[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
+    search_results_events = search_results_events.order_by('datetime')[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
     # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
     search_results = []
     for i, item in enumerate(search_results_events):
@@ -135,17 +135,17 @@ def add_venue_form_test(request):
             venue_name = form.cleaned_data['venue_name']
             address = form.cleaned_data['address']
             try:
-                point, address_fr, address_nl = Geocoder().geocode(address)
+                address_fr, address_nl, point = Geocoder().geocode(address)
                 description = form.cleaned_data['description']
                 venue_image = form.cleaned_data['venue_image']
                 venue_instance = Venue(
-                        name=venue_name,
-                        point=point,
-                        address_fr=address_fr,
-                        address_nl=address_nl,
-                        description=description,
-                        image=venue_image
-                        )
+                    name=venue_name,
+                    point=point,
+                    address_fr=address_fr,
+                    address_nl=address_nl,
+                    description=description,
+                    image=venue_image
+                )
                 venue_instance.save()
             except ValueError:
                 form = AddVenueForm()
@@ -218,13 +218,13 @@ def scrapelastfm(request):
 
     for venue in scraped.venues:
         venue_object, created = Venue.objects.get_or_create(
-                name=venue.name,
-                point=venue.point,
-                address_fr=venue.address_fr,
-                address_nl=venue.address_nl,
-                description=LOREM_1_P,
-                image=django_image_from_file('images/default_venue.png')
-                )
+            name=venue.name,
+            point=venue.point,
+            address_fr=venue.address_fr,
+            address_nl=venue.address_nl,
+            description=LOREM_1_P,
+            image=django_image_from_file('images/default_venue.png')
+        )
         if not created:
             venue_object.save()
         else:
@@ -235,12 +235,12 @@ def scrapelastfm(request):
 
     for event in scraped.events:
         event_object = Event(
-                name=event.name,
-                venue=Venue.objects.get(name=event.venue.name),
-                image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
-                official_page=event.official_page,
-                description=LOREM_1_P,
-                datetime=event.datetime
+            name=event.name,
+            venue=Venue.objects.get(name=event.venue.name),
+            image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
+            official_page=event.official_page,
+            description=LOREM_1_P,
+            datetime=event.datetime
         )
         event_object.save()
 
@@ -281,11 +281,14 @@ def scrape(request):
     Venue.objects.all().delete()
 
     for scraper in [FlageyScraper(), ABScraper()]:
+        address_fr, address_nl, point = Geocoder().geocode(scraper.venue_addres)
         venue_object, is_new_venue = Venue.objects.get_or_create(
             name=scraper.venue_name,
-            address_string=scraper.venue_addres,
+            point=point,
+            address_fr=address_fr,
+            address_nl=address_nl,
             description=scraper.description,
-            image=django_image_from_url(scraper.venue_image)
+            image=django_image_from_url(scraper.venue_image),
         )
         if is_new_venue:
             # Is the venue is new, write some reviews for them.
