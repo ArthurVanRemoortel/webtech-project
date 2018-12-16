@@ -13,7 +13,7 @@ class Venue(models.Model):
     address_fr = models.TextField(default='')
     address_nl = models.TextField(default='')
     description = models.TextField()
-    image = models.ImageField(upload_to='images/uploaded', default='default.png')
+    image = models.ImageField(upload_to='images/uploaded')
 
     def save(self, *args, **kwargs):
         if not (self.address_fr and self.address_nl):
@@ -43,7 +43,7 @@ class Event(models.Model):
     previews = models.ManyToManyField('Preview')
     datetime = models.DateTimeField()
     genres = models.ManyToManyField('Genre')
-    image = models.ImageField(upload_to='images/uploaded', default='images/default.png')
+    image = models.ImageField(upload_to='images/uploaded')
 
     def short_genres_list(self):
         characters_len = 0
@@ -96,5 +96,5 @@ class VenueReview(models.Model):
         return f"/media/images/assets/score{self.score}.png"
 
     def __str__(self):
-        return f"{self.score}: {self.text[:10]}..."
+        return f"{self.score}: {self.text[:15]}..."
 

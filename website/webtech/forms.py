@@ -5,7 +5,6 @@ from django.forms.widgets import NumberInput
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-
 class EventFilterForm(forms.Form):
     event_title = forms.CharField(label='Event title', max_length=100, required=False)
     genres = forms.CharField(max_length=100, required=False)

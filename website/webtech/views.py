@@ -203,6 +203,14 @@ def scrapelastfm(request):
             image_name += '.jpg'
         return ContentFile(file.read(), image_name)
 
+    def django_image_from_file(path):
+        image = Image.open(path)
+        file = BytesIO()
+        image.save(file, 'JPEG')
+        file.seek(0)
+        image_name = path.split("/")[-1]
+        return ContentFile(file.read(), image_name)
+
     scraped = LastfmScraper(Geocoder())
 
     for venue in scraped.venues:
@@ -210,7 +218,8 @@ def scrapelastfm(request):
                 name=venue.name,
                 point=venue.point,
                 address_fr=venue.address_fr,
-                address_nl=venue.address_nl
+                address_nl=venue.address_nl,
+                image=django_image_from_file('images/default_venue.png')
                 )
         if not created:
             venue_object.save()
@@ -221,14 +230,12 @@ def scrapelastfm(request):
                 review.save()
 
     for event in scraped.events:
-        print("scraped ", event.name)
         event_object = Event(
                 name=event.name,
                 venue=Venue.objects.get(name=event.venue.name),
-                image=django_image_from_url(event.image) if event.image else Event.image.field.default,
+                image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
                 official_page=event.official_page,
-                datetime=event.datetime
-                )
+                datetime=event.datetime)
         event_object.save()
 
     for artist in scraped.artists:

@@ -33,13 +33,13 @@ def erase_everything():
     Venue.objects.all().delete()
     VenueReview.objects.all().delete()
 
-# def django_image_from_url(url):
-#     response = requests.get(url)
-#     image = Image.open(BytesIO(response.content))
-#     file = BytesIO()
-#     image.save(file, 'JPEG')
-#     file.seek(0)
-#     image_name = url.split("/")[-1]
-#     if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
-#         image_name += '.jpg'
-#     return ContentFile(file.read(), image_name)
+def django_image_from_url(url):
+    response = requests.get(url)
+    image = Image.open(BytesIO(response.content))
+    file = BytesIO()
+    image.save(file, 'JPEG')
+    file.seek(0)
+    image_name = url.split("/")[-1]
+    if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
+        image_name += '.jpg'
+    return ContentFile(file.read(), image_name)
