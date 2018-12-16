@@ -1,9 +1,12 @@
 django
-gunicorn
 django-heroku
 django-bootstrap4
 django-bootstrap-datepicker-plus
 django-cleanup
 django-widget-tweaks
+GDAL
 geopy
+gunicorn
 htmldom
+Pillow
+pytz
