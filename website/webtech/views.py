@@ -6,7 +6,7 @@ from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
-from .helpers import LOREM_2_P, LOREM_1_P, erase_everything #django_image_from_url
+from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file
 from random import randint
 
 def is_artist_on_lastfm(artist):
@@ -188,34 +188,12 @@ def add_event_form_test(request):
 
 def scrapelastfm(request):
     from .scripts.scrapers.lastfm_scraper import LastfmScraper
-    from PIL import Image
-    from io import BytesIO
-    from django.core.files.base import ContentFile
 
     Event.objects.all().delete()
     Artist.objects.all().delete()
     Preview.objects.all().delete()
     Genre.objects.all().delete()
     Venue.objects.all().delete()
-
-    def django_image_from_url(url):
-        response = requests.get(url)
-        image = Image.open(BytesIO(response.content))
-        file = BytesIO()
-        image.save(file, 'JPEG')
-        file.seek(0)
-        image_name = url.split("/")[-1]
-        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
-            image_name += '.jpg'
-        return ContentFile(file.read(), image_name)
-
-    def django_image_from_file(path):
-        image = Image.open(path)
-        file = BytesIO()
-        image.save(file, 'JPEG')
-        file.seek(0)
-        image_name = path.split("/")[-1]
-        return ContentFile(file.read(), image_name)
 
     scraped = LastfmScraper(Geocoder())
 
@@ -261,21 +239,6 @@ def scrapelastfm(request):
 def scrape(request):
     from .scripts.scrapers.flagey_scraper import FlageyScraper
     from .scripts.scrapers.ab_scraper import ABScraper
-    from PIL import Image
-    from io import BytesIO
-    from django.core.files.base import ContentFile
-    import requests
-
-    def django_image_from_url(url):
-        response = requests.get(url)
-        image = Image.open(BytesIO(response.content))
-        file = BytesIO()
-        image.save(file, 'JPEG')
-        file.seek(0)
-        image_name = url.split("/")[-1]
-        if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
-            image_name += '.jpg'
-        return ContentFile(file.read(), image_name)
 
     Event.objects.all().delete()
     Artist.objects.all().delete()

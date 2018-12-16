@@ -52,3 +52,11 @@ def django_image_from_url(url):
     if ".jpeg" not in image_name and ".jpg" not in image_name and ".png" not in image_name:
         image_name += '.jpg'
     return ContentFile(file.read(), image_name)
+
+def django_image_from_file(path):
+    image = Image.open(path)
+    file = BytesIO()
+    image.save(file, 'JPEG')
+    file.seek(0)
+    image_name = path.split("/")[-1]
+    return ContentFile(file.read(), image_name)

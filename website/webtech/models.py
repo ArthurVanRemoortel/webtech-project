@@ -69,6 +69,9 @@ class Preview(models.Model):
     url = models.TextField()
     type = models.CharField(max_length=20)
 
+    def __str__(self):
+        return f"{self.type}: {self.url}"
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=20)

@@ -60,7 +60,7 @@
                 {% endif %}
 
                 <dt class="ml-3">Artist(s):</dt>
-                {% for artist in event.artist_set.all %}
+                {% for artist in event.artists.all %}
                 <dd class="ml-3 mb-0">
                     {{artist.name}}
                     {% if artist.last_fm_entry_exists %}
@@ -129,7 +129,6 @@
 
             var output = "<dt>Tags:</dt>";
             for(let i = 0; i < result.artist.tags.tag.length; i++){
-                console.log(result.artist.tags.tag[i].name);
                 output += "<dd>" + result.artist.tags.tag[i].name + "</dd>";
                 if(i === 4){
                     break
