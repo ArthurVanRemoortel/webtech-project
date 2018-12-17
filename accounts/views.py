@@ -56,6 +56,9 @@ class Profile(View):
 			context = {**context, **forms}
 			return render(request, 'accounts/profile.html', context)
 
+class PasswordChangeView(View):
+	template_name='pw_change_form.html'
+
 def register(request):
 	if request.method == 'POST':
 		form = RegistrationForm(request.POST)

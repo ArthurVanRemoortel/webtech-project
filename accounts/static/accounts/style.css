@@ -4,6 +4,9 @@
 .bot_margin{
 	margin-bottom: 10px;
 }
-.reviewbox{
-		
+.eventReviewBox{
+	border: 5%;
+}
+.venueReviewBox{
+	border: 5%;
 }
