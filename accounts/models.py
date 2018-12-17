@@ -33,6 +33,14 @@ class VenueReview(models.Model):
 	venue = models.ForeignKey(Venue, on_delete=models.CASCADE, default=0) 
 	text = models.TextField()
 
+	def __str__(self):
+		return self.venue.name
+
+
 class EventReview(models.Model):
+	author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
 	event = models.ForeignKey(Event, on_delete=models.CASCADE)
 	text = models.TextField()
+
+	def __str__(self):
+		return self.event.name

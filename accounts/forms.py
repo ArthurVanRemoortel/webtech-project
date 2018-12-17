@@ -30,7 +30,7 @@ class RegistrationForm(UserCreationForm):
 class VenueReviewForm(forms.ModelForm):
 	class Meta:
 		model = VenueReview
-		fields = ['author', 'venue', 'text']
+		fields = ['venue', 'text']
 
 class EventReviewForm(forms.ModelForm):
 	class Meta:
