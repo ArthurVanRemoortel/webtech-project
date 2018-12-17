@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm, ReviewForm
 from .models import Venue, Event, Genre, Artist, Preview, VenueReview
 from .scripts.geocoder import Geocoder
@@ -8,6 +8,7 @@ import requests
 from math import ceil
 from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file
 from random import randint
+import os
 
 def is_artist_on_lastfm(artist):
     try:
@@ -123,8 +124,58 @@ def venue_page(request, venue_id):
 
 
 def map(request):
-    context = {'form': MapForm()}
+    context = {
+        'form': MapForm(),
+        'mapboxtoken': os.environ.get('MAPBOXACCESSTOKEN'),
+        }
     return render(request, 'map.html', context)
+
+def events_on_date(request):
+    from datetime import date
+
+    def parseEvent(evt):
+        return {
+                'id': evt.id,
+                'name': evt.name,
+                'venue': evt.venue.name,
+                'latLng': [evt.venue.point.x, evt.venue.point.y],
+                'artists': [{'id': x['id'], 'name': x['name']} for x in evt.artists.values()],
+                'date': evt.datetime.strftime('%h %-d'),
+                'time': evt.datetime.strftime('%H:%M'),
+                'weekday': evt.datetime.strftime('%a'),
+                }
+
+    events = []
+    if request.method == 'GET':
+        the_date = date(*(int(request.GET[x]) for x in ('yy','mm','dd')))
+        results = Event.objects.filter(datetime__date=the_date)
+        events = [parseEvent(x) for x in results]
+
+    response = str(events).replace("'", '"')
+    return HttpResponse(response)
+
+
+def user_locate(request):
+    from django.contrib.gis.measure import D
+    from django.contrib.gis.geos.point import Point
+
+    def parseVenue(venue):
+        return {
+                'id': venue.id,
+                'name': venue.name,
+                'address': venue.address_nl,
+                'latLng': [venue.point.x, venue.point.y],
+                }
+
+
+    venues = []
+    if request.method == 'GET':
+        latlng = Point(float(request.GET['lat']), float(request.GET['lng']))
+        results = Venue.objects.filter(point__distance_lte=(latlng, D(km=5)))
+        venues = [parseVenue(x) for x in results]
+
+    response = str(venues).replace("'", '"')
+    return HttpResponse(response)
 
 
 # ----------- Testing --------------- #
