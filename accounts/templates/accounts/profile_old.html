@@ -11,43 +11,33 @@
 {% block navitems %}
 {% endblock %}
 {% block content %}
-
 <div class="container-fluid top_margin">
     <div class="row">
-        <!-- Profile pic+name+socials -->
         <div class="col-md-4">
             <div class="text-center bot_margin">
                 <img src="https://via.placeholder.com/200x200">
-                <h2>{{ profile.username }}</h2>
+                <h2>Person's Name</h2>
+                <a class="btn btn-primary btn-xs" href="#">Social</a>
+                <a class="btn btn-primary btn-xs" href="#">Social</a>
+                <a class="btn btn-primary btn-xs" href="#">Social</a>
             </div>
             <hr />
         </div>
-        <!-- Bio -->
         <div class="col-md-8">
             <p class="lead">BIOGRAPHY:
                 {{ profile.bio }}
                 <hr />
             </p>
-        </div>
-    </div>
-    <div class="row">
-        <!-- Event review box -->
-        <div class="col-md-4 text-center">
-        	<a class="btn btn-primary btn-xs" href="#">Social</a>
-            <a class="btn btn-primary btn-xs" href="#">Social</a>
-            <a class="btn btn-primary btn-xs" href="#">Social</a>
-        </div>
-        <div class="col-md-4">
-            <div class="eventReviewBox">
-                {% for review in event_reviews %}
-                <div class="eventReview">
-                    <!-- pass through image of each event? -->
-                    <img src="https://via.placeholder.com/100x100"/>
-    				{{ review.text }}
-    			</div>
-                {% endfor %}
-            </div>
-                <!-- Modal -->
+            <div class="reviewbox">
+                {% for review in reviews %}
+                <div class="review">
+                    <img src="https://via.placeholder.com/100x100">
+                    {{ review.text }}
+                	</div>
+                    {% endfor %}
+                    {{ erf }}
+                    {{ info }}
+                </div>
                 <div>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#eventModalCenter">
                         Add event review
@@ -87,18 +77,7 @@
                         </div>
                     </div>
                 </div>
-        </div>
-        <div class="col-md-4">
-        	<div class="venueReviewBox">
-        		{% for review in venue_reviews %}
-        		<div class="venueReview">
-        		<img src="https://via.placeholder.com/100x100"/>
-    			{{ review.text }}
-        		</div>
-        		{% endfor %}
-        	</div>
-        	<!-- Modal -->
-				<div>
+                <div>
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#venueModalCenter">
                         Add venue review
                     </button>
@@ -137,7 +116,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}

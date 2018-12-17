@@ -21,9 +21,12 @@ class Profile(View):
 		current_user = request.user
 		if current_user.is_authenticated:
 			current_user_profile = UserProfile.objects.get(user=current_user.id)
-			current_user_reviews = VenueReview.objects.filter(author=current_user.id).union(EventReview.objects.filter(author=current_user.id))
+			# current_user_reviews = VenueReview.objects.filter(author=current_user.id).union(EventReview.objects.filter(author=current_user.id))
+			event_reviews = EventReview.objects.filter(author=current_user.id)
+			venue_reviews = VenueReview.objects.filter(author=current_user.id)
 			context['profile'] = current_user_profile
-			context['reviews'] = current_user_reviews
+			context['event_reviews'] = event_reviews
+			context['venue_reviews'] = venue_reviews
 			context = {**context, **forms}
 			return render(request, 'accounts/profile.html', context)
 		else:
