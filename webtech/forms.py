@@ -21,6 +21,7 @@ class AddVenueForm(forms.Form):
     address = forms.CharField(max_length=100)
     description = forms.CharField(widget=forms.Textarea)
     venue_image = forms.ImageField()
+    official_page = forms.URLField()
 
 
 class AddEventToVenueForm(forms.Form):
@@ -41,6 +42,9 @@ class AddEventToVenueForm(forms.Form):
                         '%m/%d/%Y',
                         '%m/%d/%y']
     )
+    time = forms.TimeField(
+        widget=TimePickerInput(format='%H:%M'),
+        )
     genre = forms.CharField(max_length=100)
     official_page = forms.URLField()
     preview_links = forms.CharField(widget=forms.Textarea)

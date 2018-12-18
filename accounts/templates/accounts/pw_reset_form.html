@@ -12,12 +12,12 @@
 {% block content %}
 <div class="container top_margin">
 	<h1>Reset your password here</h1>
-	<p></p>
+	<p>If an account associated with your email is found in our database you will receive a link to reset your password shortly.</p>
 	<hr/>
 	<form method="post">
 		{% csrf_token %}
 		{{ form.as_p }}
-		<button type="submit" class="btn btn-primary">Change password</button>
+		<button type="submit" class="btn btn-primary">Reset password</button>
 	</form>
 </div>
 {% endblock %}

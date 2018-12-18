@@ -8,6 +8,7 @@ class Venue(models.Model):
     address_string = models.TextField()
     description = models.TextField()
     image = models.ImageField(upload_to='images')
+    # official_page = models.TextField() ###########was halverwege dit field toe te voegen aan de form!!!
 
     def __str__(self):
         return self.name

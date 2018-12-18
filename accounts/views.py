@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from accounts.models import UserProfile, EventReview, VenueReview
-from webtech.models import Venue, Event, Genre, Artist
+from webtech.models import Venue, Event, Genre, Artist, Preview
 from webtech.forms import AddVenueForm, AddEventToVenueForm
 from accounts.forms import RegistrationForm, VenueReviewForm, EventReviewForm
 from django.views import View
+from webtech.views import is_artist_on_lastfm
 
 # Create your views here.
 def home(request):
@@ -13,8 +14,10 @@ def home(request):
 	else:
 		return redirect('/accounts/login')
 
-class Profile(View):
+class PasswordChangeDoneView(View):
+	template_name = 'accounts/profile.html'
 
+class Profile(View):
 	def get(self, request, *args, **kwargs):
 		forms = {'e_form': EventReviewForm(),
 		'v_form': VenueReviewForm(),
@@ -75,7 +78,8 @@ class Profile(View):
 				price_strig = add_event_to_venue_form.cleaned_data['price']
 				price = 0 if "free" in price_strig.lower() else float(price_strig)
 				artists = add_event_to_venue_form.cleaned_data['artists']
-				genres = add_event_to_venue_form.cleaned_data['genres']
+				genres = add_event_to_venue_form.cleaned_data['genre']
+				previews = add_event_to_venue_form.cleaned_data['preview_links']
 				venue = add_event_to_venue_form.cleaned_data['venue']
 				venue_object = Venue.objects.get(id=venue)
 				event = Event(
@@ -85,19 +89,24 @@ class Profile(View):
 					price=price,
 					image=add_event_to_venue_form.cleaned_data['event_image'],
 					official_page=add_event_to_venue_form.cleaned_data['official_page'],
-					previews=add_event_to_venue_form.cleaned_data['preview_links'],
-					datetime=add_event_to_venue_form.cleaned_data['date'],
 					)
-				
-				for artist in artists_raw.split(','):
+
+				event.datetime=add_event_to_venue_form.cleaned_data['date']
+				event.save()
+				for artist in artists.split(','):
 					last_fm_exists = is_artist_on_lastfm(artist)
 					artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
 					artist_instance.save()
-					artist_instance.events.add(event_instance)
-				for genre in genres_raw.split(','):
+					artist_instance.events.add(event)
+				for genre in genres.split(','):
 					genre_instance = Genre(name=genre)
 					genre_instance.save()
 					event.genres.add(genre_instance)
+				for preview in previews.split(','):
+					preview_instance = Preview(url=preview,type="")
+					preview_instance.save()
+					event.previews.add(preview_instance)
+
 				event.save()
 			return redirect('profile')
 		else:
