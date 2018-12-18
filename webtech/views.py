@@ -75,9 +75,9 @@ def index(request):
                 filter_div_open = True
                 latitude = form.cleaned_data['latitude']
                 longitude = form.cleaned_data['longitude']
-                # TODO: Filter by distance
                 ref_location = Point(latitude, longitude)
-                search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
+                if not ref_location.empty:
+                    search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
 
             request.session['current-search'] = request.POST
             if last_page_post_data is None:
@@ -98,6 +98,7 @@ def index(request):
         search_results[-1].append(item)
 
     all_genres = list(Genre.objects.all().values_list('name', flat=True))
+    all_venues = list(Venue.objects.all().values_list('name', flat=True))
     context = {
         'carousel_events': Event.objects.all().order_by('datetime')[:5],
         'search_results': search_results,
@@ -105,6 +106,7 @@ def index(request):
         'pages': pages,
         'form': form,
         'all_genres': all_genres,
+        'all_venues': all_venues,
         'filter_div_open': filter_div_open,
         'user': CURRENT_USER
     }

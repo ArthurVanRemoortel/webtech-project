@@ -56,7 +56,12 @@
 
         <div class="container">
             <div class="input-group">
-                {% render_field form.event_title class="form-control" %}
+                {% render_field form.event_title class="form-control" list="venues" placeholder="Search event name of venue."%}
+                <datalist id="venues">
+                    {% for venue in all_venues %}
+                    <option value="{{venue}}">
+                        {% endfor %}
+                </datalist>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -162,16 +167,27 @@
 
 <script>
     function getCurrentLocation() {
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        };
+
+        function success(pos) {
+            let user_latitude_input = document.getElementById('user-latitude');
+            let user_longitude_input = document.getElementById('user-longitude');
+            user_latitude_input.value = pos.coords.latitude;
+            user_longitude_input.value = pos.coords.longitude;
+        }
+
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        }
+
         if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    let user_latitude_input = document.getElementById('user-latitude');
-                    let user_longitude_input = document.getElementById('user-longitude');
-                    user_latitude_input.value = position.coords.latitude;
-                    user_longitude_input.value = position.coords.longitude;
-                    console.log('Save location')
-                },
-            );
+            navigator.geolocation.getCurrentPosition(success, error, options)
+        } else {
+            console.log("Failed")
         }
     }
 
