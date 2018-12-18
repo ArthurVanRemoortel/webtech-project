@@ -26,14 +26,19 @@ class Venue(models.Model):
         super(Venue, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return str({
+            'id': self.id,
+            'name': self.name,
+            'address': self.address_nl,
+            'latLng': [self.point.x, self.point.y],
+            }).replace("'", '"')
 
     def average_score(self):
         return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
 
     def get_score_image_url(self):
         avg_score = self.average_score()
-        return f"/media/images/assets/score{avg_score}.png"
+        return "/media/images/assets/score{}.png".format(avg_score)
 
 
 class Event(models.Model):
@@ -64,7 +69,16 @@ class Event(models.Model):
         super(Event, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return str({
+            'id': self.id,
+            'name': self.name,
+            'venue': self.venue.name,
+            'latLng': [self.venue.point.x, self.venue.point.y],
+            'artists': [{'id': x['id'], 'name': x['name']} for x in self.artists.values()],
+            'date': self.datetime.strftime('%h %-d'),
+            'time': self.datetime.strftime('%H:%M'),
+            'weekday': self.datetime.strftime('%a'),
+            }).replace("'", '"')
 
 
 class Preview(models.Model):
@@ -72,7 +86,7 @@ class Preview(models.Model):
     type = models.CharField(max_length=20)
 
     def __str__(self):
-        return f"{self.type}: {self.url}"
+        return "{}: {}".format(self.type, self.url)
 
 
 class Genre(models.Model):
@@ -98,10 +112,10 @@ class VenueReview(models.Model):
     date = models.DateField()
 
     def get_score_image_url(self):
-        return f"/media/images/assets/score{self.score}.png"
+        return "/media/images/assets/score{}.png".format(self.score)
 
     def __str__(self):
-        return f"{self.score}: {self.text[:15]}..."
+        return "{}: {}...".format(self.score, self.text[:15])
 
 
 class UserProfile(models.Model):

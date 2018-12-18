@@ -6,7 +6,8 @@ from . import views, api_views
 urlpatterns = [
     path('', views.index, name='index'),
 
-    path('map', views.map, name='map'),
+    path('map/', views.map, name='map'),
+    path('map/<int:event_id>/', views.map, name='event_map'),
     path('user_locate/', views.user_locate, name='user_locate'),
     path('events_on_date/', views.events_on_date, name='events_on_date'),
 

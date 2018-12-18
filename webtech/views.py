@@ -7,6 +7,7 @@ from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
+from datetime import date
 from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file, UserProfile
 from random import randint
 import os
@@ -37,7 +38,7 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
-    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -115,7 +116,7 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
-    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     event = Event.objects.get(pk=event_id)
     user = CURRENT_USER
     user.bookmarked_events.add(event)
@@ -123,7 +124,7 @@ def bookmark_event(request, event_id):
 
 
 def bookmark_venue(request, venue_id):
-    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     event = Venue.objects.get(pk=venue_id)
     user = CURRENT_USER
     user.bookmarked_venues.add(event)
@@ -155,59 +156,39 @@ def venue_page(request, venue_id):
     return render(request, 'venue.html', context)
 
 
-def map(request):
+def map(request, event_id=None):
+    event = ""
+    if event_id:
+        query = Event.objects.filter(pk=event_id)
+        if query.exists():
+            event = str(query.first())
     context = {
         'form': MapForm(),
         'mapboxtoken': os.environ.get('MAPBOXACCESSTOKEN'),
+        'event': event,
         }
     return render(request, 'map.html', context)
 
+
 def events_on_date(request):
-    from datetime import date
-
-    def parseEvent(evt):
-        return {
-                'id': evt.id,
-                'name': evt.name,
-                'venue': evt.venue.name,
-                'latLng': [evt.venue.point.x, evt.venue.point.y],
-                'artists': [{'id': x['id'], 'name': x['name']} for x in evt.artists.values()],
-                'date': evt.datetime.strftime('%h %-d'),
-                'time': evt.datetime.strftime('%H:%M'),
-                'weekday': evt.datetime.strftime('%a'),
-                }
-
     events = []
     if request.method == 'GET':
         the_date = date(*(int(request.GET[x]) for x in ('yy','mm','dd')))
         results = Event.objects.filter(datetime__date=the_date)
-        events = [parseEvent(x) for x in results]
-
-    response = str(events).replace("'", '"')
-    return HttpResponse(response)
+        events = '[' + ','.join(str(x) for x in results) + ']'
+    return HttpResponse(str(events))
 
 
 def user_locate(request):
     from django.contrib.gis.measure import D
     from django.contrib.gis.geos.point import Point
-
-    def parseVenue(venue):
-        return {
-                'id': venue.id,
-                'name': venue.name,
-                'address': venue.address_nl,
-                'latLng': [venue.point.x, venue.point.y],
-                }
-
-
     venues = []
     if request.method == 'GET':
         latlng = Point(float(request.GET['lat']), float(request.GET['lng']))
         results = Venue.objects.filter(point__distance_lte=(latlng, D(km=5)))
-        venues = [parseVenue(x) for x in results]
-
-    response = str(venues).replace("'", '"')
-    return HttpResponse(response)
+        venues = '[' + ','.join(str(x) for x in results) + ']'
+    print(venues)
+    return HttpResponse(str(venues))
 
 
 # ----------- Testing --------------- #

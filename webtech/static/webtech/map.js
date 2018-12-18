@@ -1,21 +1,14 @@
 const mapboxAccessToken = 'pk.eyJ1IjoibHZzeiIsImEiOiJjam9qOXIzdTYwMnFpM2t2d2MyaHJxcXJsIn0.EBOtf2ATioNXLSCXj2DxGQ'
-// VUB
-var start = L.latLng(50.8227, 4.3950);
 // Grand Place
 var dest = L.latLng(50.84656, 4.3526);
 
 // create the map
 var map = L.map('map').setView(dest,5);
-var marker = L.marker(start);
 
-function userLocation(e) {
-    start = e.latlng;
-    map.setView(start,15);
-    //marker.setLatLng(e.latlng).addTo(map);
-    control.setWaypoints([start, dest]);
-}
 
-map.on('locationfound', userLocation).setView(start,15).locate();
+var control = L.Routing.control({
+    router: L.Routing.mapbox(mapboxAccessToken, { profile: 'mapbox/walking' })
+}).addTo(map);
 
 // create tile layer for map
 L.tileLayer(`https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=${mapboxAccessToken}`, {
@@ -31,12 +24,6 @@ function createButton(label, container) {
     btn.innerHTML = label;
     return btn;
 }
-
-var control = L.Routing.control({
-    // waypoints: [ start, dest ],
-    router: L.Routing.mapbox(mapboxAccessToken, { profile: 'mapbox/walking' })
-    //router: new L.Routing.osrmv1({serviceUrl: '//router.project-osrm.org/viaroute', profile: 'foot'})
-}).addTo(map);
 
 map.on('click', function(e) {
     console.log("hello");
@@ -63,6 +50,7 @@ $('#find-nearby-venues').click(function() {
     const lng = point.lng;
     const lat = point.lat;
     $.get('/webtech/user_locate/', {lng: point.lng, lat: point.lat}, function(data) {
+        venue_markers
         const venues = JSON.parse(data);
         for (venue of venues) {
             var marker = L.marker(venue.latLng, {
@@ -89,6 +77,17 @@ function event_marker_content(evt) {
     return html;
 }
 
+function event_popup(evt) {
+    return L.popup({
+        closeButton: false,
+        autoClose: false,
+        closeOnEscapeKey: false,
+        closeOnClick: false,
+    })
+        .setContent(event_marker_content(evt))
+        .setLatLng(evt.latLng)
+}
+
 function get_events_on_date(dateString, inst) {
     if (dateString) {
         event_markers.clearLayers();
@@ -98,15 +97,7 @@ function get_events_on_date(dateString, inst) {
             function(data) {
                 const evts = JSON.parse(data);
                 for (evt of evts) {
-                    var popup = L.popup({
-                        closeButton: false,
-                        autoClose: false,
-                        closeOnEscapeKey: false,
-                        closeOnClick: false,
-                    })
-                        .setLatLng(evt.latLng)
-                        .setContent(event_marker_content(evt))
-                        .addTo(event_markers);
+                    event_popup(evt).addTo(event_markers);
                 }
             })
     }
@@ -117,4 +108,23 @@ $( function() {
         dateFormat: "dd/mm/yy",
         onClose: get_events_on_date,
     });
+});
+
+function userLocation(e) {
+    user_location = e.latlng;
+    map.setView(user_location, 15);
+    //marker.setLatLng(e.latlng).addTo(map);
+    //control.setWaypoints([user_location, dest]);
+}
+
+$( document ).ready(function() {
+    var selected_event = document.getElementById("selected_event").innerHTML;
+    if (selected_event) {
+        selected_event = JSON.parse(selected_event);
+        map.setView(selected_event.latLng, 16)
+        event_popup(selected_event).addTo(event_markers);
+    } else {
+        map.setView(dest, 15);
+        map.on('locationfound', userLocation).locate();
+    }
 });
