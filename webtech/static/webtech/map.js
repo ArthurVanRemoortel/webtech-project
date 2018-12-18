@@ -26,7 +26,6 @@ function createButton(label, container) {
 }
 
 map.on('click', function(e) {
-    console.log("hello");
     var container = L.DomUtil.create('div'),
         // startBtn = createButton('Start from this location', container),
         destBtn = createButton('Go to this location', container);
@@ -78,13 +77,21 @@ function event_marker_content(evt) {
 }
 
 function event_popup(evt) {
+    var container = L.DomUtil.create('div');
+    container.innerHTML = event_marker_content(evt);
+    var btn = createButton("Go to this venue", container);
+
+    L.DomEvent.on(btn, 'click', function() {
+        control.spliceWaypoints(
+            control.getWaypoints().length - 1, 1, evt.latLng);
+    });
+
     return L.popup({
-        closeButton: false,
         autoClose: false,
         closeOnEscapeKey: false,
         closeOnClick: false,
     })
-        .setContent(event_marker_content(evt))
+        .setContent(container)
         .setLatLng(evt.latLng)
 }
 
@@ -112,9 +119,7 @@ $( function() {
 
 function userLocation(e) {
     user_location = e.latlng;
-    map.setView(user_location, 15);
-    //marker.setLatLng(e.latlng).addTo(map);
-    //control.setWaypoints([user_location, dest]);
+    control.setWaypoints([user_location]);
 }
 
 $( document ).ready(function() {
@@ -123,8 +128,9 @@ $( document ).ready(function() {
         selected_event = JSON.parse(selected_event);
         map.setView(selected_event.latLng, 16)
         event_popup(selected_event).addTo(event_markers);
+        map.on('locationfound', userLocation).locate();
     } else {
         map.setView(dest, 15);
-        map.on('locationfound', userLocation).locate();
+        map.on('locationfound', userLocation).setView(user_location, 15).locate();
     }
 });
