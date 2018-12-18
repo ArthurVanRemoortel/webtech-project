@@ -22,7 +22,7 @@ urlpatterns = [
     path('api/venues/<int:pk>/', api_views.venue_detail),
 
     path('api/reviews/<int:venue_id>/', api_views.reviews),
-    
+
     # Testing only
     path('scrapelastfm/', views.scrapelastfm, name='scrapelastfm'),
     path('scrape/', views.scrape, name='scrape')

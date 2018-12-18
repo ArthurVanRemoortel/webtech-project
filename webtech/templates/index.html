@@ -133,10 +133,9 @@
                                         {% if not user %} disabled {% endif %}>
                                     <i class="far fa-bookmark"></i>
                                 </button>
-
-                                <button type="button" class="btn btn-secondary">
+                                <a href="{% url 'map' %}/{{ result.id }}" class="btn btn-secondary">
                                     <i class="fas fa-map-marker-alt"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
