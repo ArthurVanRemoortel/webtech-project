@@ -8,10 +8,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 class EventFilterForm(forms.Form):
     event_title = forms.CharField(label='Event title', max_length=100, required=False)
     genres = forms.CharField(max_length=100, required=False)
-    date = forms.DateField(input_formats= ['%d/%m/%Y'],
+    date = forms.DateField(input_formats=['%d/%m/%Y'],
         widget=DatePickerInput(format='%d/%m/%Y'), required=False
     )
-    city = forms.CharField(max_length=100, required=False)
+    zip = forms.CharField(max_length=100, required=False)
     range = forms.CharField(max_length=20, required=False)
     range_unit = forms.ChoiceField(
         choices=[(0, "m"), (1, "km")],
@@ -39,7 +39,8 @@ class AddEventToVenueForm(forms.Form):
     genres = forms.CharField(max_length=150)
     price = forms.CharField(max_length=20)
     date = forms.DateField(
-        widget=DatePickerInput(format='%d/%m/%Y')
+        widget=DatePickerInput(format='%d/%m/%Y'),
+        input_formats=['%d/%m/%Y'],
     )
     official_page = forms.URLField()
     preview_links = forms.CharField(widget=forms.Textarea)

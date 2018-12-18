@@ -47,10 +47,15 @@
             border-bottom: none;
             border-top: none;
             z-index: 99;
-            /*position the autocomplete items to be the same width as the container:*/
             top: 100%;
             left: 0;
             right: 0;
+        }
+
+        .carousel-image {
+            height:400px;
+            object-fit:cover;
+            object-position: 0 0;
         }
 
         .autocomplete-items div {
@@ -93,6 +98,21 @@
             height: 150px;
         }
 
+        .line-overflow-5 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+        }
+        .line-overflow-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+
+
         @media only screen and (max-width: 575px) {
             div.event-info {
                 order: -1;
@@ -105,31 +125,26 @@
                 border-width: 2px;
                 border-radius: 15px;
             }
-
             h5.event-title {
                 font-size: 26pt;
                 padding-left: 6px;
             }
-
             .carousel-title {
-                font-size: 26pt;
+                font-size: 16pt;
                 font-weight: bold
             }
-
+            .carousel-image {
+                height: 300px;
+            }
         }
-
     </style>
-
-
-    <title>Title</title>
 </head>
 
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% bootstrap_javascript jquery='full' %}
 
-{% block extrahead %}
-{% endblock %}
+{{ form.media }}
 
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">

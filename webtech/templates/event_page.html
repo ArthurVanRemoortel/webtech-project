@@ -9,7 +9,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ event.name }}</title>
 </head>
 <body style="padding-top: 50px">
 
@@ -55,8 +55,8 @@
 
 
                 {% if event.price != None %}
-                    <dt class="ml-3">Price:</dt>
-                    <dd class="ml-3">€ {{ event.price }}</dd>
+                <dt class="ml-3">Price:</dt>
+                <dd class="ml-3">€ {{ event.price }}</dd>
                 {% endif %}
 
                 <dt class="ml-3">Artist(s):</dt>
@@ -77,11 +77,23 @@
                 <dd class="ml-3">
                     <a href="{{ event.official_page }}">Official page</a>
                 </dd>
+
+                <dd class="ml-3">
+                    <div class="btn-group mr-2 btn-group-sm " role="group">
+                        <button type="button" class="btn btn-secondary" onclick="bookmark_event('{{ event.id }}')">
+                            <i class="far fa-bookmark"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-secondary">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </button>
+                    </div>
+                </dd>
+
             </dl>
         </div>
     </div>
 </div>
-</body>
 
 <div class="modal fade" id="artistModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -113,10 +125,13 @@
         </div>
     </div>
 </div>
-</html>
 
-{% block javascript %}
 <script>
+    function bookmark_event(event_id){
+        $.get('/webtech/bookmark_event/'+event_id, function (data) {
+        });
+    }
+
     $('#artistModal').on('show.bs.modal', function (event) {
         var LASTFM_API_KEY = "21be84da5456cdad7c3f91947422f8ad";
         let button = $(event.relatedTarget);
@@ -139,6 +154,6 @@
         });
     })
 </script>
-{% endblock %}
-
+</body>
+</html>
 {% endblock %}

@@ -5,6 +5,7 @@ django-bootstrap-datepicker-plus
 django-cleanup
 django-widget-tweaks
 dj_database_url
+djangorestframework
 geopy
 gunicorn
 htmldom

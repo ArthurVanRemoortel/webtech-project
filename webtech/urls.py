@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
+from . import views, api_views
 
-from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -11,6 +12,12 @@ urlpatterns = [
 
     path('events/<int:event_id>', views.event_page, name='event_page'),
     path('venues/<int:venue_id>', views.venue_page, name='venue_page'),
+
+    path('api/events/', api_views.event_list),
+    path('api/events/<int:pk>/', api_views.event_detail),
+
+    path('api/venues/', api_views.venue_list),
+    path('api/venues/<int:pk>/', api_views.venue_detail),
 
     path('scrapelastfm/', views.scrapelastfm, name='scrapelastfm'),
     path('scrape/', views.scrape, name='scrape')

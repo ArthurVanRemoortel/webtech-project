@@ -1,13 +1,15 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse
+from django.db.models import Q
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm, ReviewForm
 from .models import Venue, Event, Genre, Artist, Preview, VenueReview
 from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
-from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file
+from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file, UserProfile
 from random import randint
+
 
 def is_artist_on_lastfm(artist):
     try:
@@ -32,6 +34,8 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    print(CURRENT_USER, CURRENT_USER.bookmarked_events.all())
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -43,22 +47,27 @@ def index(request):
     if request.method == 'POST':
         form = EventFilterForm(request.POST)
         if form.is_valid():
-            print(form.data)
             event_title = form.cleaned_data['event_title']
             genres = form.cleaned_data['genres'].split(', ')
             if '' in genres:
                 genres.remove('')
             date = form.cleaned_data['date']
-            city = form.cleaned_data['city']
-            _range = form.cleaned_data['range']
+            zip = form.cleaned_data['zip']
+            distance = form.cleaned_data['range']
             range_unit = form.cleaned_data['range_unit']
-            search_results_events = Event.objects.filter(name__contains=event_title)
+            # User.objects.filter(Q(income__gte=5000) | Q(income__isnull=True))
+            search_results_events = Event.objects.filter(Q(name__icontains=event_title) |
+                                                         Q(venue__name__icontains=event_title))
             if date:
                 filter_div_open = True
                 search_results_events = search_results_events.filter(datetime__date=date)
             if genres:
                 filter_div_open = True
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
+
+            if distance:
+                # TODO: Filter by distance
+                pass
 
             request.session['current-search'] = request.POST
 
@@ -93,7 +102,11 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
     event = Event.objects.get(pk=event_id)
+    user = CURRENT_USER
+    user.bookmarked_events.add(event)
+    print(user, user.bookmarked_events)
     return HttpResponse("OK")
 
 
