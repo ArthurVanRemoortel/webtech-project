@@ -1,14 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.db.models import Q
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm, ReviewForm
 from .models import Venue, Event, Genre, Artist, Preview, VenueReview
 from .scripts.geocoder import Geocoder
 from django.utils import timezone
 import requests
 from math import ceil
-from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file
+from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file, UserProfile
 from random import randint
 import os
+
+from django.contrib.gis.geos import *
+from django.contrib.gis.measure import D
 
 def is_artist_on_lastfm(artist):
     try:
@@ -33,6 +37,7 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -44,16 +49,22 @@ def index(request):
     if request.method == 'POST':
         form = EventFilterForm(request.POST)
         if form.is_valid():
-            print(form.data)
             event_title = form.cleaned_data['event_title']
             genres = form.cleaned_data['genres'].split(', ')
             if '' in genres:
                 genres.remove('')
             date = form.cleaned_data['date']
-            city = form.cleaned_data['city']
-            _range = form.cleaned_data['range']
-            range_unit = form.cleaned_data['range_unit']
-            search_results_events = Event.objects.filter(name__contains=event_title)
+            zip = form.cleaned_data['zip']
+            distance = form.cleaned_data['range']
+            if distance:
+                distance = float(distance)
+
+            distance_unit = int(form.cleaned_data['distance_unit'])
+            if distance_unit == 1:
+                # Distance in Km.
+                distance *= 1000
+            search_results_events = Event.objects.filter(Q(name__icontains=event_title) |
+                                                         Q(venue__name__icontains=event_title))
             if date:
                 filter_div_open = True
                 search_results_events = search_results_events.filter(datetime__date=date)
@@ -61,8 +72,15 @@ def index(request):
                 filter_div_open = True
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
 
-            request.session['current-search'] = request.POST
+            if distance:
+                filter_div_open = True
+                latitude = form.cleaned_data['latitude']
+                longitude = form.cleaned_data['longitude']
+                ref_location = Point(latitude, longitude)
+                if not ref_location.empty:
+                    search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
 
+            request.session['current-search'] = request.POST
             if last_page_post_data is None:
                 # If last_page_post_data is None, the user submitted a different form from the last
                 # and the page counter should restart.
@@ -81,6 +99,7 @@ def index(request):
         search_results[-1].append(item)
 
     all_genres = list(Genre.objects.all().values_list('name', flat=True))
+    all_venues = list(Venue.objects.all().values_list('name', flat=True))
     context = {
         'carousel_events': Event.objects.all().order_by('datetime')[:5],
         'search_results': search_results,
@@ -88,13 +107,26 @@ def index(request):
         'pages': pages,
         'form': form,
         'all_genres': all_genres,
-        'filter_div_open': filter_div_open
+        'all_venues': all_venues,
+        'filter_div_open': filter_div_open,
+        'user': CURRENT_USER
     }
     return render(request, 'index.html', context)
 
 
 def bookmark_event(request, event_id):
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
     event = Event.objects.get(pk=event_id)
+    user = CURRENT_USER
+    user.bookmarked_events.add(event)
+    return HttpResponse("OK")
+
+
+def bookmark_venue(request, venue_id):
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    event = Venue.objects.get(pk=venue_id)
+    user = CURRENT_USER
+    user.bookmarked_venues.add(event)
     return HttpResponse("OK")
 
 

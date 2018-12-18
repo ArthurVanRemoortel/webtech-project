@@ -4,11 +4,12 @@
 {% load widget_tweaks %}
 {% load bootstrap4 %}
 
-{% block extrahead %}
-{{ form.media }}
-{% endblock %}
-
 {% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
 
 <body style="padding-top: 50px">
 
@@ -17,14 +18,12 @@
         {% for carousel_event in carousel_events %}
         <div class="carousel-item {% if forloop.counter0 == 0 %} active {% endif %}">
             <a href="events/{{ carousel_event.id }}">
-                <img class="d-block w-100" src="{{ carousel_event.image.url }}"
-                     style="height:30%; max-height:425px;
-                            object-fit:cover;
-                            object-position: 0 0">
+                <img class="d-block w-100 carousel-image" src="{{ carousel_event.image.url }}"
+                >
                 <div class="carousel-caption d-md-block"
                      style="text-align: left;
                             text-shadow: 1px 1px 0 rgba(0,0,0,.75);">
-                    <h5 class="carousel-title overflow-hidden">
+                    <h5 class="carousel-title line-overflow-2">
                         {{ carousel_event.name }}
                     </h5>
                     <div class="btn-group btn-group-sm mb-2" role="group">
@@ -51,9 +50,18 @@
 <div class="container pt-4">
     <form autocomplete="off" class="form-group" method="post">
         {% csrf_token %}
+
+        {% render_field form.latitude id="user-latitude" %}
+        {% render_field form.longitude id="user-longitude" %}
+
         <div class="container">
             <div class="input-group">
-                {% render_field form.event_title class="form-control" %}
+                {% render_field form.event_title class="form-control" list="venues" placeholder="Search event name of venue."%}
+                <datalist id="venues">
+                    {% for venue in all_venues %}
+                    <option value="{{venue}}">
+                        {% endfor %}
+                </datalist>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -77,17 +85,17 @@
             <div class="form-row">
                 <div class="col-md-6 input-group mb-2">
                     <div class="input-group-prepend">
-                        <div class="input-group-text" style="width:80px">City</div>
+                        <div class="input-group-text" style="width:80px">Zip</div>
                     </div>
-                    {% render_field form.city class="form-control" %}
+                    {% render_field form.zip class="form-control" %}
                 </div>
                 <div class="col-md-6 input-group mb-2">
                     <div class="input-group-prepend">
                         <div class="input-group-text" style="width:72px">Range</div>
                     </div>
-                    {% render_field form.range class="form-control" %}
+                    {% render_field form.range class="form-control" onclick="getCurrentLocation()"%}
                     <div class="input-group-append">
-                        {% render_field form.range_unit class="custom-select form-control"%}
+                        {% render_field form.distance_unit class="custom-select form-control"%}
                     </div>
                 </div>
             </div>
@@ -105,7 +113,7 @@
 
                     <div class="card-body pb-0">
                         <h5 class="card-title">{{ result.name }}</h5>
-                        <p class="card-text" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">{{ result.description }}</p>
+                        <p class="card-text line-overflow-5">{{ result.description }}</p>
                         <p class="card-text" style="position: absolute; bottom: 0; padding-bottom: 65px"><small class="text-muted">{{ result.datetime|date }}</small></p>
                     </div>
                     <div class="card-footer">
@@ -116,7 +124,9 @@
                                 {% endfor %}
                             </div>
                             <div class="btn-group mr-2 btn-group-sm " role="group">
-                                <button type="button" class="btn btn-secondary" onclick="bookmark_event('{{ result.id }}')">
+                                <button type="button" class="btn btn-secondary"
+                                        onclick="bookmark_event('{{ result.id }}')"
+                                        {% if not user %} disabled {% endif %}>
                                     <i class="far fa-bookmark"></i>
                                 </button>
 
@@ -155,18 +165,34 @@
     </form>
 </div>
 
-</body>
-</html>
-
-{% block javascript %}
 <script>
-    function bookmark_event(event_id){
-        $.get('/webtech/bookmark_event/'+event_id, function (data) {
-        });
+    function getCurrentLocation() {
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        };
+
+        function success(pos) {
+            let user_latitude_input = document.getElementById('user-latitude');
+            let user_longitude_input = document.getElementById('user-longitude');
+            user_latitude_input.value = pos.coords.latitude;
+            user_longitude_input.value = pos.coords.longitude;
+        }
+
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        }
+
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error, options)
+        } else {
+            console.log("Failed")
+        }
     }
 
-    /* Everything bellow is a modified version of https://www.w3schools.com/howto/howto_js_autocomplete.asp */
 
+    /* Everything bellow is a modified version of https://www.w3schools.com/howto/howto_js_autocomplete.asp */
     function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
         the text field element and an array of possible autocompleted values:*/
@@ -206,6 +232,7 @@
                 }
             }
         });
+
         /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function(e) {
             var x = document.getElementById(this.id + "autocomplete-list");
@@ -262,9 +289,11 @@
             closeAllLists(e.target);
         });
     }
+
     autocomplete(document.getElementById("genreInput"), {{ all_genres|safe }} );
-
 </script>
-{% endblock %}
 
+
+</body>
+</html>
 {% endblock %}
