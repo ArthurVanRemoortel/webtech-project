@@ -33,12 +33,12 @@ class Venue(models.Model):
             'latLng': [self.point.x, self.point.y],
             }).replace("'", '"')
 
-    def average_score(self):
+    @property
+    def rating(self):
         return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
 
     def get_score_image_url(self):
-        avg_score = self.average_score()
-        return "/media/images/assets/score{}.png".format(avg_score)
+        return "/media/images/assets/score{}.png".format(self.rating)
 
 
 class Event(models.Model):

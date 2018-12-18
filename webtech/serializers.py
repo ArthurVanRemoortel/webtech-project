@@ -1,4 +1,4 @@
-from .models import Event, Genre, Venue
+from .models import Event, Genre, Venue, VenueReview
 from rest_framework import serializers
 
 
@@ -23,6 +23,12 @@ class VenueSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Venue
         fields = ('id', 'name', 'address_fr', 'address_nl', 'description',
-                  'image')
+                  'image', 'rating')
+
+
+class ReviewSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = VenueReview
+        fields = ('score', 'text')
 
 

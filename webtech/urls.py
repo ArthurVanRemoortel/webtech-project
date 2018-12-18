@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import routers
 from . import views, api_views
 
@@ -19,12 +19,16 @@ urlpatterns = [
     path('events/<int:event_id>', views.event_page, name='event_page'),
     path('venues/<int:venue_id>', views.venue_page, name='venue_page'),
 
+    # API
     path('api/events/', api_views.event_list),
     path('api/events/<int:pk>/', api_views.event_detail),
 
     path('api/venues/', api_views.venue_list),
     path('api/venues/<int:pk>/', api_views.venue_detail),
 
+    path('api/reviews/<int:venue_id>/', api_views.reviews),
+
+    # Testing only
     path('scrapelastfm/', views.scrapelastfm, name='scrapelastfm'),
     path('scrape/', views.scrape, name='scrape'),
 ]
