@@ -179,4 +179,14 @@
 {% endblock %}
 
 </body>
+<script>
+    function bookmark_event(event_id){
+        $.get('/webtech/bookmark_event/'+event_id, function (data) {
+        });
+    }
+    function bookmark_venue(venue_id){
+        $.get('/webtech/bookmark_venue/'+venue_id, function (data) {
+        });
+    }
+</script>
 </html>

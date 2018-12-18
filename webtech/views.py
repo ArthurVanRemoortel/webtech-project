@@ -35,7 +35,6 @@ def index(request):
     last_page_post_data = None
     filter_div_open = False
     CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
-    print(CURRENT_USER, CURRENT_USER.bookmarked_events.all())
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -96,7 +95,8 @@ def index(request):
         'pages': pages,
         'form': form,
         'all_genres': all_genres,
-        'filter_div_open': filter_div_open
+        'filter_div_open': filter_div_open,
+        'user': CURRENT_USER
     }
     return render(request, 'index.html', context)
 
@@ -106,7 +106,14 @@ def bookmark_event(request, event_id):
     event = Event.objects.get(pk=event_id)
     user = CURRENT_USER
     user.bookmarked_events.add(event)
-    print(user, user.bookmarked_events)
+    return HttpResponse("OK")
+
+
+def bookmark_venue(request, venue_id):
+    CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+    event = Venue.objects.get(pk=venue_id)
+    user = CURRENT_USER
+    user.bookmarked_venues.add(event)
     return HttpResponse("OK")
 
 

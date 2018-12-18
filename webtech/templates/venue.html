@@ -55,6 +55,13 @@
             <dl>
                 <dt class="">Address:</dt>
                 <dd class="">{{ venue.address_nl }}</dd>
+                <dd>
+                    <button type="button" class="btn btn-secondary"
+                            onclick="bookmark_venue('{{ venue.id }}')"
+                            {% if not user %} disabled {% endif %}>
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                </dd>
             </dl>
             <iframe width="100%" height="100%" style="min-height: 400px"
                     frameborder="0"

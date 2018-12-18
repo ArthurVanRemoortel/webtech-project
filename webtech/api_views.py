@@ -56,12 +56,12 @@ def venue_detail(request, pk):
     Retrieve single event.
     """
     try:
-        event = Event.objects.get(pk=pk)
-    except Event.DoesNotExist:
+        event = Venue.objects.get(pk=pk)
+    except Venue.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = EventSerializer(event)
+        serializer = VenueSerializer(event)
         return Response(serializer.data)
     else:
         return Response(status=status.HTTP_403_FORBIDDEN)

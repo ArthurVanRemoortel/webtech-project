@@ -115,7 +115,9 @@
                                 {% endfor %}
                             </div>
                             <div class="btn-group mr-2 btn-group-sm " role="group">
-                                <button type="button" class="btn btn-secondary" onclick="bookmark_event('{{ result.id }}')">
+                                <button type="button" class="btn btn-secondary"
+                                        onclick="bookmark_event('{{ result.id }}')"
+                                        {% if not user %} disabled {% endif %}>
                                     <i class="far fa-bookmark"></i>
                                 </button>
 
@@ -155,11 +157,6 @@
 </div>
 
 <script>
-    function bookmark_event(event_id){
-        $.get('/webtech/bookmark_event/'+event_id, function (data) {
-        });
-    }
-
     /* Everything bellow is a modified version of https://www.w3schools.com/howto/howto_js_autocomplete.asp */
     function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
