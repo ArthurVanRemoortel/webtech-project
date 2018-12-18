@@ -10,6 +10,8 @@ from math import ceil
 from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file, UserProfile
 from random import randint
 
+from django.contrib.gis.geos import *
+from django.contrib.gis.measure import D
 
 def is_artist_on_lastfm(artist):
     try:
@@ -53,8 +55,13 @@ def index(request):
             date = form.cleaned_data['date']
             zip = form.cleaned_data['zip']
             distance = form.cleaned_data['range']
-            range_unit = form.cleaned_data['range_unit']
-            # User.objects.filter(Q(income__gte=5000) | Q(income__isnull=True))
+            if distance:
+                distance = float(distance)
+
+            distance_unit = int(form.cleaned_data['distance_unit'])
+            if distance_unit == 1:
+                # Distance in Km.
+                distance *= 1000
             search_results_events = Event.objects.filter(Q(name__icontains=event_title) |
                                                          Q(venue__name__icontains=event_title))
             if date:
@@ -65,11 +72,14 @@ def index(request):
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
 
             if distance:
+                filter_div_open = True
+                latitude = form.cleaned_data['latitude']
+                longitude = form.cleaned_data['longitude']
                 # TODO: Filter by distance
-                pass
+                ref_location = Point(latitude, longitude)
+                search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
 
             request.session['current-search'] = request.POST
-
             if last_page_post_data is None:
                 # If last_page_post_data is None, the user submitted a different form from the last
                 # and the page counter should restart.

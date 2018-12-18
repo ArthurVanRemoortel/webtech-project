@@ -51,7 +51,7 @@
 
                 </dd>
                 <dt class="ml-3">Date & Time:</dt>
-                <dd class="ml-3">{{ event.datetime }}</dd>
+                <dd class="ml-3">{{ event.datetime|date:'d.m.Y H:i'  }}</dd>
 
 
                 {% if event.price != None %}

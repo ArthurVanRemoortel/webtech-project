@@ -19,7 +19,7 @@
         <div class="carousel-item {% if forloop.counter0 == 0 %} active {% endif %}">
             <a href="events/{{ carousel_event.id }}">
                 <img class="d-block w-100 carousel-image" src="{{ carousel_event.image.url }}"
-                     >
+                >
                 <div class="carousel-caption d-md-block"
                      style="text-align: left;
                             text-shadow: 1px 1px 0 rgba(0,0,0,.75);">
@@ -50,6 +50,10 @@
 <div class="container pt-4">
     <form autocomplete="off" class="form-group" method="post">
         {% csrf_token %}
+
+        {% render_field form.latitude id="user-latitude" %}
+        {% render_field form.longitude id="user-longitude" %}
+
         <div class="container">
             <div class="input-group">
                 {% render_field form.event_title class="form-control" %}
@@ -84,9 +88,9 @@
                     <div class="input-group-prepend">
                         <div class="input-group-text" style="width:72px">Range</div>
                     </div>
-                    {% render_field form.range class="form-control" %}
+                    {% render_field form.range class="form-control" onclick="getCurrentLocation()"%}
                     <div class="input-group-append">
-                        {% render_field form.range_unit class="custom-select form-control"%}
+                        {% render_field form.distance_unit class="custom-select form-control"%}
                     </div>
                 </div>
             </div>
@@ -157,6 +161,21 @@
 </div>
 
 <script>
+    function getCurrentLocation() {
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    let user_latitude_input = document.getElementById('user-latitude');
+                    let user_longitude_input = document.getElementById('user-longitude');
+                    user_latitude_input.value = position.coords.latitude;
+                    user_longitude_input.value = position.coords.longitude;
+                    console.log('Save location')
+                },
+            );
+        }
+    }
+
+
     /* Everything bellow is a modified version of https://www.w3schools.com/howto/howto_js_autocomplete.asp */
     function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,
@@ -197,6 +216,7 @@
                 }
             }
         });
+
         /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function(e) {
             var x = document.getElementById(this.id + "autocomplete-list");
@@ -253,6 +273,7 @@
             closeAllLists(e.target);
         });
     }
+
     autocomplete(document.getElementById("genreInput"), {{ all_genres|safe }} );
 </script>
 

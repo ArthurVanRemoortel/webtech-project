@@ -13,10 +13,13 @@ class EventFilterForm(forms.Form):
     )
     zip = forms.CharField(max_length=100, required=False)
     range = forms.CharField(max_length=20, required=False)
-    range_unit = forms.ChoiceField(
+    distance_unit = forms.ChoiceField(
         choices=[(0, "m"), (1, "km")],
         required=False
     )
+    # Would be hidden.
+    latitude = forms.FloatField(required=False, widget=forms.HiddenInput())
+    longitude = forms.FloatField(required=False, widget=forms.HiddenInput())
 
 
 class AddVenueForm(forms.Form):
@@ -51,6 +54,7 @@ class ReviewForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea)
     score = forms.IntegerField(widget=NumberInput(attrs={'type': 'range'}),
                                validators=[MaxValueValidator(10), MinValueValidator(0)])
+
 
 class MapForm(forms.Form):
     search_string = forms.CharField()
