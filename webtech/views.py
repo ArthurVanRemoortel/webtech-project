@@ -89,13 +89,16 @@ def index(request):
         search_results_events = Event.objects.all()
 
     pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
-    search_results_events = search_results_events.order_by('datetime')[(page_n-1)*20:page_n*20]  # Only the events that should be displayed on this page.
-    # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
     search_results = []
-    for i, item in enumerate(search_results_events):
-        if i % 2 == 0:
-            search_results.append([])
-        search_results[-1].append(item)
+    if search_results_events:
+        pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
+        search_results_events = search_results_events.order_by('datetime')[(page_n-1)*20:page_n*20]
+        # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
+        search_results = []
+        for i, item in enumerate(search_results_events):
+            if i % 2 == 0:
+                search_results.append([])
+            search_results[-1].append(item)
 
     all_genres = list(Genre.objects.all().values_list('name', flat=True))
     all_venues = list(Venue.objects.all().values_list('name', flat=True))

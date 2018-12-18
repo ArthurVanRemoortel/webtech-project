@@ -9,14 +9,14 @@ class EventFilterForm(forms.Form):
     event_title = forms.CharField(label='Event title', max_length=100, required=False)
     genres = forms.CharField(max_length=100, required=False)
     date = forms.DateField(input_formats=['%d/%m/%Y'],
-        widget=DatePickerInput(format='%d/%m/%Y'), required=False
-    )
+        widget=DatePickerInput(format='%d/%m/%Y'), required=False)
     zip = forms.CharField(max_length=100, required=False)
     range = forms.CharField(max_length=20, required=False)
     distance_unit = forms.ChoiceField(
         choices=[(0, "m"), (1, "km")],
         required=False
     )
+
     # Would be hidden.
     latitude = forms.FloatField(required=False, widget=forms.HiddenInput())
     longitude = forms.FloatField(required=False, widget=forms.HiddenInput())
