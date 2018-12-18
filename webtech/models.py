@@ -28,12 +28,12 @@ class Venue(models.Model):
     def __str__(self):
         return self.name
 
-    def average_score(self):
+    @property
+    def rating(self):
         return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
 
     def get_score_image_url(self):
-        avg_score = self.average_score()
-        return f"/media/images/assets/score{avg_score}.png"
+        return f"/media/images/assets/score{self.rating}.png"
 
 
 class Event(models.Model):
