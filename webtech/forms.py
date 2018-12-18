@@ -16,7 +16,6 @@ class EventFilterForm(forms.Form):
         required=False
     )
 
-
 class AddVenueForm(forms.Form):
     venue_name = forms.CharField(max_length=100)
     address = forms.CharField(max_length=100)
@@ -36,8 +35,13 @@ class AddEventToVenueForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea)
     price = forms.CharField(max_length=20)
     date = forms.DateField(
-        widget=DatePickerInput(format='%d/%m/%Y')
+        widget=DatePickerInput(format='%d/%m/%Y'),
+        input_formats=[ '%Y-%m-%d',
+                        '%d/%m/%Y',
+                        '%m/%d/%Y',
+                        '%m/%d/%y']
     )
+    genre = forms.CharField(max_length=100)
     official_page = forms.URLField()
     preview_links = forms.CharField(widget=forms.Textarea)
     event_image = forms.ImageField()

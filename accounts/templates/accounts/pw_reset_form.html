@@ -1,0 +1,23 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css">
+{% endblock %}
+{% block title %}
+<title>Change password</title>
+{% endblock %}
+{% block navitems %}
+{% endblock %}
+{% block content %}
+<div class="container top_margin">
+	<h1>Reset your password here</h1>
+	<p></p>
+	<hr/>
+	<form method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit" class="btn btn-primary">Change password</button>
+	</form>
+</div>
+{% endblock %}

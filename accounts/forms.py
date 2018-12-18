@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import VenueReview, EventReview
+from webtech.models import Venue
 
 class RegistrationForm(UserCreationForm):
 	email = forms.EmailField()
@@ -37,3 +38,7 @@ class EventReviewForm(forms.ModelForm):
 		model = EventReview
 		fields = ['event', 'text']
 
+# class AddVenueForm(forms.ModelForm):
+# 	class Meta:
+# 		model = Venue
+# 		fields = ['name', 'description', 'address_string', 'image',]
