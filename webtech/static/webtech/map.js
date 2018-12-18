@@ -1,6 +1,8 @@
 const mapboxAccessToken = 'pk.eyJ1IjoibHZzeiIsImEiOiJjam9qOXIzdTYwMnFpM2t2d2MyaHJxcXJsIn0.EBOtf2ATioNXLSCXj2DxGQ'
 // Grand Place
-var dest = L.latLng(50.84656, 4.3526);
+var dest = L.latLng(50.8467139, 4.3524994);
+// Brussels Central Station
+var user_location = L.latLng(50.8454639, 4.3569867);
 
 // create the map
 var map = L.map('map').setView(dest,5);
