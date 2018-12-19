@@ -64,11 +64,13 @@ def index(request):
             if distance_unit == 1:
                 # Distance in Km.
                 distance *= 1000
+
             search_results_events = Event.objects.filter(Q(name__icontains=event_title) |
-                                                         Q(venue__name__icontains=event_title))
+                                                         Q(venue__name__icontains=event_title)).filter(datetime__date__gte=timezone.now())
             if date:
                 filter_div_open = True
                 search_results_events = search_results_events.filter(datetime__date=date)
+
             if genres:
                 filter_div_open = True
                 search_results_events = search_results_events.filter(genres__name__in=genres).distinct()
@@ -93,9 +95,9 @@ def index(request):
     pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
     search_results = []
     if search_results_events:
-        pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
+        # Put the results in pairwise blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
+        # This mathches the rows and columns on the homepage.
         search_results_events = search_results_events.order_by('datetime')[(page_n-1)*20:page_n*20]
-        # Put the results in blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
         search_results = []
         for i, item in enumerate(search_results_events):
             if i % 2 == 0:
@@ -253,9 +255,9 @@ def add_event_form_test(request):
 
     return render(request, 'add_event_form.html', context)
 
+
 def scrapelastfm(request):
     from .scripts.scrapers.lastfm_scraper import LastfmScraper
-
     Event.objects.all().delete()
     Artist.objects.all().delete()
     Preview.objects.all().delete()
@@ -353,7 +355,8 @@ def scrape(request):
                 artist_instance.events.add(event_object)
 
             for preview_url in event_dict['previews']:
-                p, _ = Preview.objects.get_or_create(url=preview_url, type="youtube")
+                youtube_video_id = preview_url.split('embed/')[-1].split('?version')[0]
+                p, _ = Preview.objects.get_or_create(youtube_video_id=youtube_video_id, type="youtube")
                 event_object.previews.add(p)
 
             for genre in event_dict['event_tags']:

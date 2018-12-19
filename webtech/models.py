@@ -82,11 +82,16 @@ class Event(models.Model):
 
 
 class Preview(models.Model):
-    url = models.TextField()
+    youtube_video_id = models.TextField()
     type = models.CharField(max_length=20)
 
+    @property
+    def youtube_embeddable_link(self):
+        print(f'https://www.youtube.com/embed/{self.youtube_video_id}')
+        return f'https://www.youtube.com/embed/{self.youtube_video_id}'
+
     def __str__(self):
-        return "{}: {}".format(self.type, self.url)
+        return "{}: {}".format(self.type, self.youtube_video_id)
 
 
 class Genre(models.Model):
