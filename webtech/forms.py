@@ -34,9 +34,7 @@ class AddEventToVenueForm(forms.Form):
         super(AddEventToVenueForm, self).__init__(*args, **kwargs)
 
     event_name = forms.CharField(max_length=100)
-    venue = forms.ChoiceField(  # TODO: Only show venues linked to the users account.
-        choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
-    )
+    venue = forms.ModelChoiceField(queryset=Venue.objects.all())
     artists = forms.CharField(max_length=100)
     description = forms.CharField(widget=forms.Textarea)
     genres = forms.CharField(max_length=150)

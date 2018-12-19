@@ -25,13 +25,16 @@ class Venue(models.Model):
             self.address_nl = location.address_nl
         super(Venue, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def toJson(self):
         return str({
             'id': self.id,
             'name': self.name,
             'address': self.address_nl,
             'latLng': [self.point.x, self.point.y],
             }).replace("'", '"')
+
+    def __str__(self):
+        return self.name
 
     @property
     def rating(self):
@@ -68,7 +71,7 @@ class Event(models.Model):
             self.price = Decimal(self.price).quantize(Decimal("0.00"))
         super(Event, self).save(*args, **kwargs)
 
-    def __str__(self):
+    def toJson(self):
         return str({
             'id': self.id,
             'name': self.name,
@@ -79,6 +82,9 @@ class Event(models.Model):
             'time': self.datetime.strftime('%H:%M'),
             'weekday': self.datetime.strftime('%a'),
             }).replace("'", '"')
+
+    def __str__(self):
+        return self.name
 
 
 class Preview(models.Model):
