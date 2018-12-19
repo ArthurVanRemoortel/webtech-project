@@ -13,8 +13,10 @@ class UserProfile(models.Model):
 	bio = models.CharField(max_length=500, default='')
 	website = models.URLField(default='')
 	registered = models.DateTimeField(auto_now=True)
-	bookmarked_venues = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='bookmarked_by')
-	bookmarked_event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='bookmarked_by')
+	# bookmarked_venues = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='bookmarked_by')
+	# bookmarked_event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='bookmarked_by')
+	bookmarked_venues = models.ManyToManyField(Venue)
+	bookmarked_event = models.ManyToManyField(Event)
 	owned_venues = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='owner')
 
 	def __str__(self):

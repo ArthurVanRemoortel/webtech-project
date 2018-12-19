@@ -27,13 +27,17 @@ class Profile(View):
 		current_user = request.user
 		if current_user.is_authenticated:
 			current_user_profile = UserProfile.objects.get(user=current_user.id)
-			# current_user_reviews = VenueReview.objects.filter(author=current_user.id).union(EventReview.objects.filter(author=current_user.id))
 			event_reviews = EventReview.objects.filter(author=current_user.id)
 			venue_reviews = VenueReview.objects.filter(author=current_user.id)
 			context['profile'] = current_user_profile
 			context['event_reviews'] = event_reviews
 			context['venue_reviews'] = venue_reviews
-			context = {**context, **forms}
+			
+			venue_bookmarks = current_user_profile.bookmarked_venues.all()
+			event_bookmarks = current_user_profile.bookmarked_event.all()
+			#raise Exception(venue_bookmarks) #empty for some reason
+			bookmarks = {'e_b': event_bookmarks, 'v_b': venue_bookmarks}
+			context = {**context, **forms, **bookmarks}
 			return render(request, 'accounts/profile.html', context)
 		else:
 			return redirect('login')
@@ -70,6 +74,8 @@ class Profile(View):
 					image=add_venue_form.cleaned_data['venue_image'],
 					description=add_venue_form.cleaned_data['description'])
 				
+				UserProfile.objects.get(user=current_user.id)
+				UserProfile.owned_venues.add(venue)
 				venue.save()
 				return redirect('profile')
 		if 'newEventForm' in request.POST:
