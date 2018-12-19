@@ -47,6 +47,7 @@ class Event(models.Model):
     genres = models.ManyToManyField('Genre', related_name='events')
     image = models.ImageField(upload_to='images/uploaded')
 
+
     def short_genres_list(self):
         characters_len = 0
         passed_genres = []

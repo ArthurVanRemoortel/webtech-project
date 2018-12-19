@@ -4,3 +4,8 @@ __pycache__
 .*.swp
 uploaded
 */migrations
+
+#from merge
+#*.jpg
+#*.png
+#*.pyc

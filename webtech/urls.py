@@ -26,4 +26,4 @@ urlpatterns = [
     # Testing only
     path('scrapelastfm/', views.scrapelastfm, name='scrapelastfm'),
     path('scrape/', views.scrape, name='scrape')
-]
+

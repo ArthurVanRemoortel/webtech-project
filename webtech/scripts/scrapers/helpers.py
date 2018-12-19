@@ -26,8 +26,8 @@ def extract_price_from_raw_string(price_string):
             event_price = max(map(float, re.findall(r'\d+', price_string)))
         except:
             event_price = 0
-    return event_price
 
+    return event_price
 
 def clean_up_string(text):
     """

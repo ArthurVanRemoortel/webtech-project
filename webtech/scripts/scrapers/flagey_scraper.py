@@ -7,6 +7,7 @@ except ModuleNotFoundError:
     from settings import SEARCH_PAGE_LIMIT
     from helpers import get_parsable_html, extract_price_from_raw_string, clean_up_string
 
+
 BLACKLISTED = ['Meet']  # Events with these tags probably aren't concerts. Ignore them.
 DONT_SEARCH_PREVIEW = ['Hosted events', 'Workshop']  # Events with these tags will probably not be found on youtube/last.fm/...
 
@@ -19,6 +20,7 @@ class FlageyScraper(object):
         self.description = "Flagey Square, is a square in the Brussels municipality of Ixelles, Belgium. With ten streets converging at Flagey Square, it is one of the best connected crossroads in the city, directly adjacent to the neighbouring Ixelles Ponds. A large flood control reservoir and a parking lot have been built under the square."
         self.venue_image = "https://www.flagey.be/assets/img/og_image_20170607.png"
         self.venue_addres = "Place Sainte-Croix, 1050 Bruxelles"
+
 
     def start_scrape(self, limit_results=False):
         results = []

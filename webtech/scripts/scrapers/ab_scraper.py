@@ -3,6 +3,7 @@ import datetime
 from .settings import SEARCH_PAGE_LIMIT
 from .helpers import get_parsable_html, extract_price_from_raw_string, clean_up_string
 
+
 def translate_datetime_string(date_string):
     # Python's datetime module doesn't work well with Dutch weakdays.
     # Translates Dutch to English.

@@ -1,0 +1,316 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css">
+<!-- {{ form.media }} -->
+{{ ae_form.media }}
+{% endblock %}
+{% block title %}
+<title>{{ profile.username }}'s profile</title>
+{% endblock %}
+{% block navitems %}
+
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid top_margin">
+    <div class="row">
+        <!-- Profile pic+name+socials -->
+        <div class="col-md-4">
+            <div class="text-center bot_margin">
+                <img src="https://via.placeholder.com/200x200">
+                <h2>{{ profile.username }}</h2>
+            </div>
+            
+        </div>
+        <!-- Bio -->
+        <div class="col-md-8">
+            <p class="lead">BIOGRAPHY:
+                {{ profile.bio }}
+                <hr />
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Event review box -->
+        <div class="col-md-4 text-center">
+        	<a class="btn btn-primary btn-xs" href="#">Social</a>
+            <a class="btn btn-primary btn-xs" href="#">Social</a>
+            <a class="btn btn-primary btn-xs" href="#">Social</a>
+            <hr/>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueModalCenter">
+                Add venue
+            </button>
+            <div class="modal fade bd-example-modal-lg" id="addVenueModalCenter" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="post" enctype="multipart/form-data">
+                                    <!--Header-->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addVenueModalLongTitle">Please add a venue you are the owner of</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                         <div class="modal-body">
+                                            {% csrf_token %}
+                                            {% for hidden in av_form.hidden_fields %}
+                                            {{ hidden }}
+                                            {% endfor %}
+                                            <div class="form-group">
+                                                <label>Venue Name</label>
+                                                {% render_field av_form.venue_name class="form-control" %}
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="adress">Address</label>
+                                                {% render_field av_form.address class="form-control" %}
+                                            </div>
+                                            <br>
+                                            <iframe width="100%" height="350"
+                                                    frameborder="0"
+                                                    scrolling="no"
+                                                    marginheight="0"
+                                                    marginwidth="0"
+                                                    src="https://www.openstreetmap.org/export/embed.html?bbox=4.388093948364259%2C50.816944275211995%2C4.412298202514649%2C50.825457269654166&amp;layer=mapnik" style="border: 1px solid black">
+                                            </iframe><small>Please make sure the address is correct.</small><br/>
+
+                                            <div class="form-group mt-2">
+                                                <label for="description">Add a description for your venue.</label>
+                                                {% render_field av_form.description class="form-control" %}
+                                            </div>
+                                            <div class="form-group mt-2">
+                                                <label for="venue_image">Venue Image</label>
+                                                <div class="custom-file">
+                                                    {{ av_form.venue_image|add_class:'custom-file-input'}}
+                                                    <label class="custom-file-label" for="venue_image">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary" name="addVenueForm">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventModalCenter">
+                        Add event
+                    </button>
+                    <div class="modal fade bd-example-modal-lg" id="addEventModalCenter" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                <form method="post" enctype="multipart/form-data">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleAddEventLongTitle">Add an event to your venue.</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <!--Content-->
+                    <div class="container">
+                        <p class="lead">
+                            Please fill in the details
+                        </p>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {% for hidden in ae_form.hidden_fields %}
+                        {{ hidden }}
+                        {% endfor %}
+                        <div class="form-group mb-3">
+                            <label>Event Name</label>
+                            {% render_field ae_form.event_name class="form-control" %}
+                        </div><div class="form-group mb-3">
+                            <label>Date</label>
+                            {% render_field ae_form.date class="form-control" %}
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            {% render_field ae_form.time class="form-control" % }
+                        </div>
+                        <div class="form-group">
+                            <label>Venue</label>
+                            {% render_field ae_form.venue class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Artist(s)</label>
+                            {% render_field ae_form.artists class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Description</label>
+                            {% render_field ae_form.description class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Genre</label>
+                            {% render_field ae_form.genre class="form-control" %}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Official Page</label>
+                            {% render_field ae_form.official_page class="form-control" %}
+                        </div>
+                        <div class="form-group mb-1">
+                            <label>Previews</label>
+                            {% render_field ae_form.preview_links class="form-control" rows=5%}
+                            <br>
+                        </div>
+                        <div class="form-row mb-2">
+                            <div class="col-md-6 input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">€</div>
+                                </div>
+                                {% render_field ae_form.price class="form-control" %}
+                            </div>
+                            <div class="form-group col-md-6 input-group mb-2">
+                                <div class="custom-file">
+                                    {% render_field ae_form.event_image class="custom-file-input" %}
+                                    <label class="custom-file-label">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" name="newEventForm">Save</button>
+                    </div>
+                </form>
+            </div>
+                        </div>
+                </div>
+                </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="eventReviewBox">
+                {% for review in event_reviews %}
+                <div class="eventReview">
+                    <!-- pass through image of each event? -->
+                    <img src="https://via.placeholder.com/100x100"/>
+    				{{ review.text }}
+    			</div>
+                {% endfor %}
+            </div>
+                <!-- Modal -->
+                <div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#eventModalCenter">
+                        Add event review
+                    </button>
+                    <div class="modal fade bd-example-modal-lg" id="eventModalCenter" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="post" enctype="multipart/form-data">
+                                    <!--Header-->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="eventModalLongTitle">Review an event you went to</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        <!-- manual unrolling of the form looks a lot nicer -->
+                                        <div class="form-group mb-3">
+                                            <label>Event</label>
+                                            {% render_field e_form.event class="form-control" %}
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Review</label>
+                                            {% render_field e_form.text class="form-control" %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary" name="eventForm">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <div class="col-md-4">
+        	<div class="venueReviewBox">
+        		{% for review in venue_reviews %}
+        		<div class="venueReview">
+        		<img src="https://via.placeholder.com/100x100"/>
+    			{{ review.text }}
+        		</div>
+        		{% endfor %}
+        	</div>
+        	<!-- Modal -->
+				<div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#venueModalCenter">
+                        Add venue review
+                    </button>
+                    <div class="modal fade bd-example-modal-lg" id="venueModalCenter" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="post" enctype="multipart/form-data">
+                                    <!--Header-->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="venueModalLongTitle">Review a venue you've been to</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        <!-- manual unrolling of the form looks a lot nicer -->
+                                        <div class="form-group mb-3">
+                                            <label>Venue</label>
+                                            {% render_field v_form.venue class="form-control" %}
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label>Review</label>
+                                            {% render_field v_form.text class="form-control" %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary" name="venueForm">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <div class="row top_margin">
+        <div class="col-md-4">
+        </div>
+        <!-- venues -->
+        <div class="col-md-4">
+            <h2>Bookmarked events</h2>
+        {% for event in e_b %}
+            <div class="eventBookmark">
+                <img src="../{{ event.image }}"/>
+                {{ event.name }}
+                <p>{{ event.description }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    <!-- events -->
+        <div class="col-md-4">
+            <h2>Bookmarked venues</h2>
+        {% for venue in v_b %}
+            <div class="eventBookmark">
+                <img src="../{{ venue.image }}"/>
+                {{ venue.name }}
+                <p>{{ venue.description }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+</div>
+{% endblock %}

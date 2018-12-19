@@ -37,6 +37,7 @@ def index(request):
     last_page_post_data = None
     filter_div_open = False
     CURRENT_USER = UserProfile.objects.get(username="Arthur")  # TODO: Temporary
+
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -82,6 +83,7 @@ def index(request):
                     search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
 
             request.session['current-search'] = request.POST
+
             if last_page_post_data is None:
                 # If last_page_post_data is None, the user submitted a different form from the last
                 # and the page counter should restart.
@@ -114,6 +116,7 @@ def index(request):
         'all_venues': all_venues,
         'filter_div_open': filter_div_open,
         'user': CURRENT_USER
+
     }
     return render(request, 'index.html', context)
 
@@ -133,12 +136,10 @@ def bookmark_venue(request, venue_id):
     user.bookmarked_venues.add(event)
     return HttpResponse("OK")
 
-
 def event_page(request, event_id):
     event = Event.objects.get(pk=event_id)
     context = {'event': event}
     return render(request, 'event_page.html', context)
-
 
 def venue_page(request, venue_id):
     venue = Venue.objects.get(pk=venue_id)
@@ -219,6 +220,7 @@ def add_event_form_test(request):
                 artist_instance.events.add(event_instance)
     else:
         form = AddEventToVenueForm()
+
     context['form'] = form
 
     return render(request, 'add_event_form.html', context)
@@ -316,6 +318,7 @@ def scrape(request):
             event_object.save()
 
             # No artists are currently scraped from an event. For testing purposes only, asume the event title is the artist.
+
             # This will not be accurate, but good enough for demonstration.
             for artist in [event_name]:
                 artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]  # feat. in a title can mean the the band name was before it.
@@ -333,3 +336,4 @@ def scrape(request):
                 event_object.genres.add(g)
 
     return HttpResponse("OK")
+

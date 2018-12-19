@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<body>
+<div style="padding-top: 100px">
+    <form class="form-group" method="post">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        {{ form }}
+    </form>
+</div>
+</body>
+
+{% endblock %}
