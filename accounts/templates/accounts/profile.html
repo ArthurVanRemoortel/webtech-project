@@ -286,22 +286,28 @@
                 </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row top_margin">
+        <div class="col-md-4">
+        </div>
         <!-- venues -->
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <h2>Bookmarked events</h2>
         {% for event in e_b %}
             <div class="eventBookmark">
+                <img src="../{{ event.image }}"/>
                 {{ event.name }}
-                {{ event.description }}
+                <p>{{ event.description }}</p>
             </div>
         {% endfor %}
         </div>
     <!-- events -->
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <h2>Bookmarked venues</h2>
         {% for venue in v_b %}
             <div class="eventBookmark">
+                <img src="../{{ venue.image }}"/>
                 {{ venue.name }}
-                {{ venue.description }}
+                <p>{{ venue.description }}</p>
             </div>
         {% endfor %}
     </div>
