@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-from django.contrib.gis import forms
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db.models.functions import Length
