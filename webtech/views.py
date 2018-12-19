@@ -166,7 +166,7 @@ def map(request, event_id=None):
     if event_id:
         query = Event.objects.filter(pk=event_id)
         if query.exists():
-            event = str(query.first())
+            event = query.first().toJson()
     context = {
         'form': MapForm(),
         'mapboxtoken': os.environ.get('MAPBOXACCESSTOKEN'),
@@ -180,7 +180,7 @@ def events_on_date(request):
     if request.method == 'GET':
         the_date = date(*(int(request.GET[x]) for x in ('yy','mm','dd')))
         results = Event.objects.filter(datetime__date=the_date)
-        events = '[' + ','.join(str(x) for x in results) + ']'
+        events = '[' + ','.join(x.toJson() for x in results) + ']'
     return HttpResponse(str(events))
 
 
@@ -191,7 +191,7 @@ def user_locate(request):
     if request.method == 'GET':
         latlng = Point(float(request.GET['lat']), float(request.GET['lng']))
         results = Venue.objects.filter(point__distance_lte=(latlng, D(km=5)))
-        venues = '[' + ','.join(str(x) for x in results) + ']'
+        venues = '[' + ','.join(x.toJson() for x in results) + ']'
     print(venues)
     return HttpResponse(str(venues))
 
@@ -233,14 +233,14 @@ def add_event_form_test(request):
         form = AddEventToVenueForm(request.POST, request.FILES)
         if form.is_valid():
             event_name = form.cleaned_data['event_name']
-            venue = form.cleaned_data['venue']
+            venue_id = form.cleaned_data['venue'].id
             artists_raw = form.cleaned_data['artists']
             description = form.cleaned_data['description']
             price_strig = form.cleaned_data['price']
             price = 0 if "free" in price_strig.lower() else float(price_strig)
             event_image = form.cleaned_data['event_image']
             date = form.cleaned_data['date']
-            venue_object = Venue.objects.get(id=venue)
+            venue_object = Venue.objects.get(id=venue_id)
             event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image, datetime=date)
             event_instance.save()
 
