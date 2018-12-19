@@ -34,14 +34,14 @@
             </p>
             <p class="h4">Previews</p>
             {% for preview in event.previews.all %}
-            <iframe width=100% height=350px src=https://{{ preview.url }} frameborder="0" allowfullscreen></iframe>
+            <iframe width=100% height=350px src=https://{{ preview.youtube_embeddable_link }} frameborder="0" allowfullscreen></iframe>
             {% endfor %}
         </div>
         <div class="col-sm-4 event-info">
             <dl class="">
                 <dt class="ml-3">Location:</dt>
                 <dd class="ml-3">{{ event.venue.name }}
-                    <span>
+                    <span>'video_id'.
                         <a href="/webtech/venues/{{ event.venue.id }}">
                             <button class="btn">
                                 <i class="fas fa-info-circle"></i>
