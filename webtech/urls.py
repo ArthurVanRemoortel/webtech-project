@@ -5,7 +5,12 @@ from . import views, api_views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('map', views.map, name='map'),
+
+    path('map/', views.map, name='map'),
+    path('map/<int:event_id>/', views.map, name='event_map'),
+    path('user_locate/', views.user_locate, name='user_locate'),
+    path('events_on_date/', views.events_on_date, name='events_on_date'),
+
     path('bookmark_event/<int:event_id>', views.bookmark_event, name='bookmark_event'),
     path('bookmark_venue/<int:venue_id>', views.bookmark_venue, name='bookmark_venue'),
     path('add_venue_form_test', views.add_venue_form_test, name='add_venue_form_test'),
@@ -25,5 +30,5 @@ urlpatterns = [
 
     # Testing only
     path('scrapelastfm/', views.scrapelastfm, name='scrapelastfm'),
-    path('scrape/', views.scrape, name='scrape')
+    path('scrape/', views.scrape, name='scrape'),
 ]

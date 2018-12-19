@@ -12,3 +12,4 @@ htmldom
 Pillow
 pytz
 requests
+whitenoise
