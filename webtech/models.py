@@ -73,6 +73,7 @@ class Preview(models.Model):
 
     @property
     def youtube_embeddable_link(self):
+        print(f'https://www.youtube.com/embed/{self.youtube_video_id}')
         return f'https://www.youtube.com/embed/{self.youtube_video_id}'
 
     def __str__(self):
