@@ -1,0 +1,190 @@
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
+    <meta charset="UTF-8">
+    <title>{{ profile.username }}'s profile</title>
+    <style>
+        .vertical-center {
+ 		min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  		min-height: 100vh;
+
+  		display: flex;
+  		align-items: center;
+	}
+	</style>
+</head>
+<div class="container vertical-center">
+    <div class="row">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueModalCenter">
+            Add venue
+        </button>
+        <!-- Venue modal -->
+        <div class="modal fade bd-example-modal-lg" id="addVenueModalCenter" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form method="post" enctype="multipart/form-data">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addVenueModalLongTitle">Please add a venue you are the owner of</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Venue Name</label>
+                                {% render_field venue_form.name class="form-control" %}
+                            </div>
+                            <div class="form-group">
+                                <label for="adress">Address</label>
+                                {% render_field venue_form.address class="form-control" %}
+                            </div>
+                            <br>
+                            <iframe width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=4.388093948364259%2C50.816944275211995%2C4.412298202514649%2C50.825457269654166&amp;layer=mapnik" style="border: 1px solid black">
+                            </iframe><small>Please make sure the address is correct.</small><br />
+                            <div class="form-group mt-2">
+                                <label for="description">Add a description for your venue.</label>
+                                {% render_field venue_form.description class="form-control" %}
+                            </div>
+                            <div class="form-group mt-2">
+                                <label>Venue Image</label>
+                                <div class="custom-file">
+                                    {% render_field venue_form.image|add_class:'custom-file-input' %}
+                                    <label class="custom-file-label">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" name="addVenueForm">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventModalCenter">
+            Add event
+        </button>
+        <!-- Event modal -->
+        <div class="modal fade bd-example-modal-lg" id="addEventModalCenter" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form method="post" enctype="multipart/form-data">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleAddEventLongTitle">Add an event to your venue.</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <!--Content-->
+                        <div class="container">
+                            <p class="lead">
+                                Please fill in the details
+                            </p>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label>Event Name</label>
+                                {% render_field event_form.event_name class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Date</label>
+                                {% render_field event_form.date class="form-control" %}
+                            </div>
+                            <div class="form-group">
+                                <label>Time</label>
+                                {% render_field event_form.time class="form-control" % }
+                            </div>
+                            <div class="form-group">
+                                <label>Venue</label>
+                                {% render_field event_form.venue class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Artist(s)</label>
+                                {% render_field event_form.artists class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Description</label>
+                                {% render_field event_form.description class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Genre</label>
+                                {% render_field event_form.genre class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Official Page</label>
+                                {% render_field event_form.official_page class="form-control" %}
+                            </div>
+                            <div class="form-group mb-1">
+                                <label>Previews</label>
+                                {% render_field event_form.preview_links class="form-control" rows=5%}
+                                <br>
+                            </div>
+                            <div class="form-row mb-2">
+                                <div class="col-md-6 input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">€</div>
+                                    </div>
+                                    {% render_field event_form.price class="form-control" %}
+                                </div>
+                                <div class="form-group col-md-6 input-group mb-2">
+                                    <div class="custom-file">
+                                        {% render_field event_form.event_image class="custom-file-input" %}
+                                        <label class="custom-file-label">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" name="newEventForm">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container personal-info">
+            <div class="col-md-4 text-center">
+                <h2>
+				{{ profile.username }}
+				</h2>
+            </div>
+            <div class="col-md-4">
+                <p>{{ profile.bio }}</p>
+            </div>
+            <div class="col-md-4">
+            	My bookmarked venues are 
+            	{% for venues in venue_bookmarks %}
+            	{{ venues }},
+            	{% endfor %}
+            	and my bookmarked events are
+            	{% for events in event_bookmarks %}
+            	{{ events }}, 
+            	{% endfor %}
+            	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
+            		Add venue bookmark
+        		</button>
+        		<!-- Venue bookmark modal -->
+        		
+
+        		
+        		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
+            		Add event bookmark
+        		</button>
+        		<!-- Event bookmark modal -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
