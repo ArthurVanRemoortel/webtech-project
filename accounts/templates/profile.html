@@ -153,7 +153,6 @@
                 </div>
             </div>
         </div>
-
         <div class="container personal-info">
             <div class="col-md-4 text-center">
                 <h2>
@@ -164,25 +163,75 @@
                 <p>{{ profile.bio }}</p>
             </div>
             <div class="col-md-4">
-            	My bookmarked venues are 
-            	{% for venues in venue_bookmarks %}
-            	{{ venues }},
-            	{% endfor %}
-            	and my bookmarked events are
-            	{% for events in event_bookmarks %}
-            	{{ events }}, 
-            	{% endfor %}
-            	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
-            		Add venue bookmark
-        		</button>
-        		<!-- Venue bookmark modal -->
-        		
+                My bookmarked venues are
+                {% for venues in venue_bookmarks %}
+                {{ venues }},
+                {% endfor %}
+                and my bookmarked events are
+                {% for events in event_bookmarks %}
+                {{ events }},
+                {% endfor %}
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
+                    Add venue bookmark
+                </button>
+                <!-- Venue bookmark modal -->
+                <div class="modal fade bd-example-modal-lg" id="addVenueBookmark" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="post" enctype="multipart/form-data">
+                                <!--Header-->
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addVenueBookmark">Please choose a venue to add to your bookmarks</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <!-- <label>Venue Name</label> -->
+                                        {% render_field venue_bookmark_form.venue class="form-control" %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="addVenueForm">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-        		
-        		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
-            		Add event bookmark
-        		</button>
-        		<!-- Event bookmark modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
+                    Add event bookmark
+                </button>
+                <!-- Event bookmark modal -->
+                <div class="modal fade bd-example-modal-lg" id="addEventBookmark" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="post" enctype="multipart/form-data">
+                                <!--Header-->
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addEventBookmark">Please choose an event to add to your bookmarks</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <!-- <label>Venue Name</label> -->
+                                        {% render_field event_bookmark_form.event class="form-control" %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="addVenueBookmarkForm">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

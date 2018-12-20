@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from webtech.models import Venue, Event
 
 class VenueForm(forms.ModelForm):
@@ -23,3 +24,9 @@ class EventBookmarkForm(forms.Form):
 	event = forms.ChoiceField(
 		choices=[(o.id, str(o.name)) for o in Event.objects.all()]
 		)
+
+class RegistrationForm(UserCreationForm):
+	email = forms.EmailField()
+	# profile_picture = ImageField()
+
+
