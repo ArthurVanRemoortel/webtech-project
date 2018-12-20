@@ -3,7 +3,7 @@ from geopy.geocoders import OpenCage
 
 
 _opencage_api_key = '2effc381905143b7aa14e50ea7ff4fae'
-_geocoder = OpenCage(_opencage_api_key)
+_geocoder = OpenCage(_opencage_api_key, timeout=3)
 
 
 class Geocoder:

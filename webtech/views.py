@@ -275,7 +275,7 @@ def scrapelastfm(request):
                 address_fr=venue.address_fr,
                 address_nl=venue.address_nl,
                 description=LOREM_1_P,
-                image=django_image_from_file('images/default_venue.png')
+                image=django_image_from_file('media/images/default_venue.png')
             )
             venue_object.save()
             for i in range(7):
@@ -286,7 +286,7 @@ def scrapelastfm(request):
         event_object = Event(
             name=event.name,
             venue=Venue.objects.get(name=event.venue.name),
-            image=django_image_from_url(event.image) if event.image else django_image_from_file('images/default_event.jpg'),
+            image=django_image_from_url(event.image) if event.image else django_image_from_file('media/images/default_event.jpg'),
             official_page=event.official_page,
             description=LOREM_1_P,
             datetime=event.datetime
