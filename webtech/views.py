@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.db.models import Q
 from .forms import EventFilterForm, AddVenueForm, AddEventToVenueForm, MapForm, ReviewForm
 from .models import Venue, Event, Genre, Artist, Preview, VenueReview
@@ -8,7 +8,7 @@ from django.utils import timezone
 import requests
 from math import ceil
 from datetime import date
-from .helpers import LOREM_2_P, LOREM_1_P, erase_everything, django_image_from_url, django_image_from_file, UserProfile
+from .helpers import LOREM_2_P, LOREM_1_P, django_image_from_url, django_image_from_file
 from random import randint
 import os
 
@@ -38,7 +38,7 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
-    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    CURRENT_USER = None # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -121,7 +121,7 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
-    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     event = Event.objects.get(pk=event_id)
     user = CURRENT_USER
     user.bookmarked_events.add(event)
@@ -129,7 +129,7 @@ def bookmark_event(request, event_id):
 
 
 def bookmark_venue(request, venue_id):
-    CURRENT_USER = UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     event = Venue.objects.get(pk=venue_id)
     user = CURRENT_USER
     user.bookmarked_venues.add(event)
