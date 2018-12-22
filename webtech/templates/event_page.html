@@ -141,7 +141,7 @@
             document.getElementById("artist-modal-title").innerHTML = artist;
             document.getElementById("artist-modal-image").src = result.artist.image[3]["#text"];
 
-            var output = "<dt>Tags:</dt>";
+            let output = "<dt>Tags:</dt>";
             for(let i = 0; i < result.artist.tags.tag.length; i++){
                 output += "<dd>" + result.artist.tags.tag[i].name + "</dd>";
                 if(i === 4){

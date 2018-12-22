@@ -38,7 +38,7 @@ def event_detail(request, pk):
 @api_view(['GET'])
 def venue_list(request):
     """
-    List all events.
+    List all venues.
     """
     if request.method == 'GET':
         venues = Venue.objects.all()
@@ -49,7 +49,7 @@ def venue_list(request):
 @api_view(['GET'])
 def venue_detail(request, pk):
     """
-    Retrieve single event.
+    Retrieve single venue.
     """
     try:
         venue = Venue.objects.get(pk=pk)
