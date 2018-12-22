@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from webtech.models import Venue, Event
+from bootstrap_datepicker_plus import DateTimePickerInput
 
 class VenueForm(forms.ModelForm):
 	address = forms.CharField()
@@ -13,6 +14,10 @@ class EventForm(forms.ModelForm):
 	previews = forms.CharField()
 	class Meta:
 		model = Event
+		widget = {
+			# 'datetime': DateTimePickerInput(format='%H:%M/%d/%m/%y'),
+			'datetime': DateTimePickerInput(format='%H:%M/%d/%m/%y'),
+		}
 		fields = ['name', 'venue', 'description', 'price', 'official_page', 'genres', 'image', 'datetime']
 
 class VenueBookmarkForm(forms.Form):
@@ -26,7 +31,6 @@ class EventBookmarkForm(forms.Form):
 		)
 
 class RegistrationForm(UserCreationForm):
-	email = forms.EmailField()
-	# profile_picture = ImageField()
-
-
+	email = forms.EmailField(label='Email')
+	first_name = forms.CharField(label='First name')
+	last_name = forms.CharField(label='Last name')

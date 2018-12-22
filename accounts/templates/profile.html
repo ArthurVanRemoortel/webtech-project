@@ -1,12 +1,13 @@
 {% extends 'layout.html'%}
 {% load widget_tweaks %}
-{% load bootstrap4 %}
 {% load static %}
+{{ event_form.media }}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+	{{ event_form.media }}
     <!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
     <meta charset="UTF-8">
     <title>{{ profile.username }}'s profile</title>
@@ -20,7 +21,7 @@
 	}
 	</style>
 </head>
-<div class="container vertical-center">
+<div class="container jumbotron vertical-center">
     <div class="row">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueModalCenter">
             Add venue
@@ -32,7 +33,7 @@
                     <form method="post" enctype="multipart/form-data">
                         <!--Header-->
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addVenueModalLongTitle">Please add a venue you are the owner of</h5>
+                            <h5 class="modal-title" id="addVenueModal">Please add a venue you are the owner of</h5>
                             <button type="button" class="close" data-dismiss="modal">
                                 <span>&times;</span>
                             </button>
@@ -45,11 +46,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="adress">Address</label>
+                                <small class="form-text text-muted">Please make sure the address is typed correctly</small>
                                 {% render_field venue_form.address class="form-control" %}
                             </div>
-                            <br>
-                            <iframe width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=4.388093948364259%2C50.816944275211995%2C4.412298202514649%2C50.825457269654166&amp;layer=mapnik" style="border: 1px solid black">
-                            </iframe><small>Please make sure the address is correct.</small><br />
                             <div class="form-group mt-2">
                                 <label for="description">Add a description for your venue.</label>
                                 {% render_field venue_form.description class="form-control" %}
@@ -93,17 +92,16 @@
                         </div>
                         <div class="modal-body">
                             {% csrf_token %}
+							{% for hidden in form.hidden_fields %}
+                        	{{ hidden }}
+                        	{% endfor %}
                             <div class="form-group mb-3">
                                 <label>Event Name</label>
-                                {% render_field event_form.event_name class="form-control" %}
+                                {% render_field event_form.name class="form-control" %}
                             </div>
                             <div class="form-group mb-3">
                                 <label>Date</label>
-                                {% render_field event_form.date class="form-control" %}
-                            </div>
-                            <div class="form-group">
-                                <label>Time</label>
-                                {% render_field event_form.time class="form-control" % }
+                                {% render_field event_form.datetime class="form-control" %}
                             </div>
                             <div class="form-group">
                                 <label>Venue</label>
@@ -119,7 +117,7 @@
                             </div>
                             <div class="form-group mb-3">
                                 <label>Genre</label>
-                                {% render_field event_form.genre class="form-control" %}
+                                {% render_field event_form.genres class="form-control" %}
                             </div>
                             <div class="form-group mb-3">
                                 <label>Official Page</label>
@@ -136,6 +134,7 @@
                                         <div class="input-group-text">€</div>
                                     </div>
                                     {% render_field event_form.price class="form-control" %}
+                                    <small class="form-text text-muted">'free' or price in euros</small>
                                 </div>
                                 <div class="form-group col-md-6 input-group mb-2">
                                     <div class="custom-file">
@@ -147,7 +146,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" name="newEventForm">Save</button>
+                            <button type="submit" class="btn btn-primary" name="addEventForm">Save</button>
                         </div>
                     </form>
                 </div>
@@ -195,7 +194,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary" name="addVenueForm">Save</button>
+                                    <button type="submit" class="btn btn-primary" name="addVenueBookmark">Save</button>
                                 </div>
                             </form>
                         </div>
@@ -220,13 +219,12 @@
                                 <div class="modal-body">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <!-- <label>Venue Name</label> -->
                                         {% render_field event_bookmark_form.event class="form-control" %}
                                     </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary" name="addVenueBookmarkForm">Save</button>
+                                    <button type="submit" class="btn btn-primary" name="addEventBookmark">Save</button>
                                 </div>
                             </form>
                         </div>
