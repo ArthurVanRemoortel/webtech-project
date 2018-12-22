@@ -168,7 +168,8 @@ def register(request):
 
 
 def check_preview_for_youtube(preview):
+	watch_prefix = 'watch?v='
 	if 'youtube.com/watch?v=' in preview:
-		return preview[preview.find('watch?v='):]
+		return preview[(preview.find(watch_prefix)+len(watch_prefix)):]
 	else:
 		return None
