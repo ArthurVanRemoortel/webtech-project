@@ -7,7 +7,6 @@ _geocoder = OpenCage(_opencage_api_key, timeout=3)
 
 
 class Geocoder:
-
     class Location:
         def __init__(self, location):
             self.point = Point(location.latitude, location.longitude)

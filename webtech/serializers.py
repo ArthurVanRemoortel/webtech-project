@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    # genres = serializers.ReadOnlyField(read_only=True)
     genres = serializers.StringRelatedField(many=True)
     class Meta:
         model = Event

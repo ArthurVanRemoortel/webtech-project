@@ -16,6 +16,9 @@ from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
 
 def is_artist_on_lastfm(artist):
+    """
+    Verifies if the artist exists on the Last.fm API.
+    """
     try:
         api_key = "21be84da5456cdad7c3f91947422f8ad"
         artist.replace(" ", "%20")
@@ -23,7 +26,6 @@ def is_artist_on_lastfm(artist):
         r = requests.get(url).json()
         if 'error' in r:
             return False
-        # TODO: Verify if it actually contains usefull data.
         return True
     except:
         return False
@@ -38,7 +40,8 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
-    CURRENT_USER = None # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
         # I want to force it to be a POST request anyway and apply the form data again.
@@ -92,7 +95,7 @@ def index(request):
         form = EventFilterForm()
         search_results_events = Event.objects.all()
 
-    pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # Number of pages
+    pages = list(range(int(ceil(len(search_results_events) / 20.0)) + 1)[1:])  # List of numbers representing the pages.
     search_results = []
     if search_results_events:
         # Put the results in pairwise blocks of 2. e.g [[event1, event2], [event3, event4], [event5]
@@ -121,19 +124,19 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
-    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
-    event = Event.objects.get(pk=event_id)
-    user = CURRENT_USER
-    user.bookmarked_events.add(event)
-    return HttpResponse("OK")
+    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    if current_user:
+        event = Event.objects.get(pk=event_id)
+        current_user.bookmarked_events.add(event)
+        return HttpResponse("OK")
 
 
 def bookmark_venue(request, venue_id):
-    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
-    event = Venue.objects.get(pk=venue_id)
-    user = CURRENT_USER
-    user.bookmarked_venues.add(event)
-    return HttpResponse("OK")
+    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    if current_user:
+        event = Venue.objects.get(pk=venue_id)
+        current_user.bookmarked_venues.add(event)
+        return HttpResponse("OK")
 
 
 def event_page(request, event_id):
@@ -151,13 +154,11 @@ def venue_page(request, venue_id):
             score = review_form.cleaned_data['score']
             review = VenueReview(text=text, score=score, venue=venue, date=timezone.now())
             review.save()
-
     else:
         review_form = ReviewForm()
 
     context = {'venue': venue,
-               'review_form': review_form
-               }
+               'review_form': review_form}
     return render(request, 'venue.html', context)
 
 
@@ -178,7 +179,7 @@ def map(request, event_id=None):
 def events_on_date(request):
     events = []
     if request.method == 'GET':
-        the_date = date(*(int(request.GET[x]) for x in ('yy','mm','dd')))
+        the_date = date(*(int(request.GET[x]) for x in ('yy', 'mm', 'dd')))
         results = Event.objects.filter(datetime__date=the_date)
         events = '[' + ','.join(x.toJson() for x in results) + ']'
     return HttpResponse(str(events))
@@ -197,66 +198,74 @@ def user_locate(request):
 
 
 # ----------- Testing --------------- #
+"""
+The following views are mainly intendted for testing, but will still be included because the might
+still be usefull for evaluating the project. 
 
+These views will scrape some data, write/invent reviews and store them in the database. 
+"""
 
-def add_venue_form_test(request):
-    context = {}
-    if request.method == 'POST':
-        form = AddVenueForm(request.POST, request.FILES)
-        if form.is_valid():
-            venue_name = form.cleaned_data['venue_name']
-            address = form.cleaned_data['address']
-            try:
-                address_fr, address_nl, point = Geocoder().geocode(address)
-                description = form.cleaned_data['description']
-                venue_image = form.cleaned_data['venue_image']
-                venue_instance = Venue(
-                    name=venue_name,
-                    point=point,
-                    address_fr=address_fr,
-                    address_nl=address_nl,
-                    description=description,
-                    image=venue_image
-                )
-                venue_instance.save()
-            except ValueError:
-                form = AddVenueForm()
-    else:
-        form = AddVenueForm()
-    context['form'] = form
-    return render(request, 'add_venue_form.html', context)
-
-
-def add_event_form_test(request):
-    context = {}
-    if request.method == 'POST':
-        form = AddEventToVenueForm(request.POST, request.FILES)
-        if form.is_valid():
-            event_name = form.cleaned_data['event_name']
-            venue_id = form.cleaned_data['venue'].id
-            artists_raw = form.cleaned_data['artists']
-            description = form.cleaned_data['description']
-            price_strig = form.cleaned_data['price']
-            price = 0 if "free" in price_strig.lower() else float(price_strig)
-            event_image = form.cleaned_data['event_image']
-            date = form.cleaned_data['date']
-            venue_object = Venue.objects.get(id=venue_id)
-            event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image, datetime=date)
-            event_instance.save()
-
-            for artist in artists_raw.split(','):
-                last_fm_exists = is_artist_on_lastfm(artist)
-                artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
-                artist_instance.save()
-                artist_instance.events.add(event_instance)
-    else:
-        form = AddEventToVenueForm()
-    context['form'] = form
-
-    return render(request, 'add_event_form.html', context)
+# def add_venue_form_test(request):
+#     context = {}
+#     if request.method == 'POST':
+#         form = AddVenueForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             venue_name = form.cleaned_data['venue_name']
+#             address = form.cleaned_data['address']
+#             try:
+#                 address_fr, address_nl, point = Geocoder().geocode(address)
+#                 description = form.cleaned_data['description']
+#                 venue_image = form.cleaned_data['venue_image']
+#                 venue_instance = Venue(
+#                     name=venue_name,
+#                     point=point,
+#                     address_fr=address_fr,
+#                     address_nl=address_nl,
+#                     description=description,
+#                     image=venue_image
+#                 )
+#                 venue_instance.save()
+#             except ValueError:
+#                 form = AddVenueForm()
+#     else:
+#         form = AddVenueForm()
+#     context['form'] = form
+#     return render(request, 'add_venue_form.html', context)
+#
+#
+# def add_event_form_test(request):
+#     context = {}
+#     if request.method == 'POST':
+#         form = AddEventToVenueForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             event_name = form.cleaned_data['event_name']
+#             venue_id = form.cleaned_data['venue'].id
+#             artists_raw = form.cleaned_data['artists']
+#             description = form.cleaned_data['description']
+#             price_strig = form.cleaned_data['price']
+#             price = 0 if "free" in price_strig.lower() else float(price_strig)
+#             event_image = form.cleaned_data['event_image']
+#             date = form.cleaned_data['date']
+#             venue_object = Venue.objects.get(id=venue_id)
+#             event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image, datetime=date)
+#             event_instance.save()
+#
+#             for artist in artists_raw.split(','):
+#                 last_fm_exists = is_artist_on_lastfm(artist)
+#                 artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
+#                 artist_instance.save()
+#                 artist_instance.events.add(event_instance)
+#     else:
+#         form = AddEventToVenueForm()
+#     context['form'] = form
+#
+#     return render(request, 'add_event_form.html', context)
 
 
 def scrapelastfm(request):
+    """
+    Scrapes events from the last.fm API.
+    """
     from .scripts.scrapers.lastfm_scraper import LastfmScraper
     Event.objects.all().delete()
     Artist.objects.all().delete()
@@ -305,6 +314,9 @@ def scrapelastfm(request):
 
 
 def scrape(request):
+    """
+    Scrapes events from flagey.be and abconcerts.be.
+    """
     from .scripts.scrapers.flagey_scraper import FlageyScraper
     from .scripts.scrapers.ab_scraper import ABScraper
 
@@ -345,13 +357,13 @@ def scrape(request):
                                  official_page=event_dict['event_url'],
                                  datetime=event_dict['event_datetime'])
             event_object.save()
-
-            # No artists are currently scraped from an event. For testing purposes only, asume the event title is the artist.
+            # No artists are currently scraped from an event. For testing purposes only, assume the event title is the artist.
             # This will not be accurate, but good enough for demonstration.
             for artist in [event_name]:
-                artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]  # feat. in a title can mean the the band name was before it.
+                artist_adjusted = artist[:100].split(' feat')[0].split(" + ")[0]
                 last_fm_exists = is_artist_on_lastfm(artist_adjusted)
-                artist_instance, new = Artist.objects.get_or_create(name=artist_adjusted, last_fm_entry_exists=last_fm_exists)
+                artist_instance, new = Artist.objects.get_or_create(name=artist_adjusted,
+                                                                    last_fm_entry_exists=last_fm_exists)
                 artist_instance.events.add(event_object)
 
             for preview_url in event_dict['previews']:
