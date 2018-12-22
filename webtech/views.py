@@ -124,19 +124,19 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
-    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
-    event = Event.objects.get(pk=event_id)
-    user = CURRENT_USER
-    user.bookmarked_events.add(event)
-    return HttpResponse("OK")
+    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    if current_user:
+        event = Event.objects.get(pk=event_id)
+        current_user.bookmarked_events.add(event)
+        return HttpResponse("OK")
 
 
 def bookmark_venue(request, venue_id):
-    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
-    event = Venue.objects.get(pk=venue_id)
-    user = CURRENT_USER
-    user.bookmarked_venues.add(event)
-    return HttpResponse("OK")
+    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    if current_user:
+        event = Venue.objects.get(pk=venue_id)
+        current_user.bookmarked_venues.add(event)
+        return HttpResponse("OK")
 
 
 def event_page(request, event_id):
