@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.views import View
 from accounts.forms import VenueForm, EventForm, VenueBookmarkForm, EventBookmarkForm, RegistrationForm
 from accounts.models import UserProfile
-from webtech.models import Venue, Event
+from webtech.models import Venue, Event, Artist, Preview
 from django.contrib.auth.models import User
 from webtech.scripts.geocoder import Geocoder
+from webtech.views import is_artist_on_lastfm
 
 def home(request):
 	current_user = request.user
@@ -13,15 +14,20 @@ def home(request):
 	else:
 		return redirect('/accounts/login')
 
+
+#steps for this view: 
+#-find out request type: get/post
+#-if get, give all the info to display
+#-if post, check which form the user is posting and write info to database
 class Profile(View):
-	def get(self, request, *args, **kwargs): #overriding get request
+	def get(self, request, *args, **kwargs):
 		forms = {
 			'venue_form': VenueForm(),
 			'event_form': EventForm(),
 
 			'venue_bookmark_form': VenueBookmarkForm(),
 			'event_bookmark_form': EventBookmarkForm(),
-		} #make forms that'll be used either way
+		} 
 		context = {}
 		current_user = request.user
 		if current_user.is_authenticated: #retrieve the user's info to display
@@ -36,23 +42,24 @@ class Profile(View):
 		else:
 			return redirect('login')
 
-	def post(self, request, *args, **kwargs): #if it's a post request it contains form data
-		forms = {
-			'venue_form': VenueForm(),
-			'event_form': EventForm(),
-
-			'venue_bookmark_form': VenueBookmarkForm(),
-			'event_bookmark_form': EventBookmarkForm(),
-		}
+		#post: 
+		#-see which form
+		#-see if it's valid
+		#-if so, extract information, process information that requires this
+		#-make obj, save to db
+		#-redirect
+	def post(self, request, *args, **kwargs):
 		context = {}
 		current_user = request.user
 		current_user_profile = UserProfile.objects.get(user=current_user.id)
 		if 'addVenueBookmark'in request.POST:
 			v_b_form = VenueBookmarkForm(request.POST)
-			# raise Exception(v_b_form.is_valid())
 			if v_b_form.is_valid():
 				chosen_venue = v_b_form.cleaned_data['venue']
-				current_user_profile.bookmarked_venues.add(chosen_venue)
+				try:
+					current_user_profile.bookmarked_venues.add(chosen_venue)
+				except IntegrityError:
+					pass #in case it's already a bookmark: do nothing
 				current_user_profile.save()
 				return redirect('profile')
 			else:
@@ -61,7 +68,10 @@ class Profile(View):
 			e_b_form = EventBookmarkForm(request.POST)
 			if e_b_form.is_valid():
 				chosen_event = e_b_form.cleaned_data['event']
-				current_user_profile.bookmarked_event.add(chosen_event)
+				try:
+					current_user_profile.bookmarked_event.add(chosen_event)
+				except IntegrityError:
+					pass #in case it's already a bookmark: do nothing
 				current_user_profile.save()
 				return redirect('profile')
 			else:
@@ -71,7 +81,7 @@ class Profile(View):
 			if a_v_form.is_valid():
 				address = a_v_form.cleaned_data['address']
 				address_fr, address_nl, point = Geocoder().geocode(address)
-				#update owned venues
+				#todo: update owned venues
 				venue = Venue(
 					name=a_v_form.cleaned_data['name'],
 					point=point,
@@ -87,39 +97,48 @@ class Profile(View):
 		if 'addEventForm' in request.POST:
 			a_e_form = EventForm(request.POST, request.FILES)
 			if a_e_form.is_valid():
-				price_input = add_event_to_venue_form.cleaned_data['price']
-				price = 0 if "free" in price_input.lower() else float(price_input)
-				venue = add_event_to_venue_form.cleaned_data['venue']
-				venue_object = Venue.objects.get(id=venue)
-				artists = add_event_to_venue_form.cleaned_data['artists']
-				genres = add_event_to_venue_form.cleaned_data['genres']
-				previews = add_event_to_venue_form.cleaned_data['preview_links']
+				price_input = a_e_form.cleaned_data['price']
+				venue_object = a_e_form.cleaned_data['venue']
+				artists = a_e_form.cleaned_data['artists']
+				genres = a_e_form.cleaned_data['genres']
+				previews = a_e_form.cleaned_data['previews']
 
 				event = Event(
-						name=a_v_form.cleaned_data['name'],
+						name=a_e_form.cleaned_data['name'],
 						venue=venue_object,
-						description=a_v_form.cleaned_data['description'],
-						price=a_v_form.cleaned_data['price'],
-						official_page=a_v_form.cleaned_data['official_page'],
-						datetime=a_v_form.cleaned_data['datetime'],
-						image=a_v_form.cleaned_data['image'],
+						description=a_e_form.cleaned_data['description'],
+						price=a_e_form.cleaned_data['price'],
+						official_page=a_e_form.cleaned_data['official_page'],
+						datetime=a_e_form.cleaned_data['date'],
+						image=a_e_form.cleaned_data['image'],
 					)
+				#todo: solve it not saving the time
 
+				#order of saving objects is important here
+				#id needs to be created (is done on save) etc..
+				event.save()
 				for artist in artists.split(','):
 					last_fm_exists = is_artist_on_lastfm(artist)
 					artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
+					artist_instance.save()
 					artist_instance.events.add(event)
-				for genre in genres.split(','):
-					genre_instance = Genre(name=genre)
-					event.genres.add(genre_instance)
+				for genre in genres:
+					event.genres.add(genre)
 				for preview in previews.split(','):
-					preview_instance = Preview(url=preview,type="")
+					yt_check = check_preview_for_youtube(preview)
+					if yt_check is None:
+						#preview_instance = Preview(youtube_video_id=preview,type="")
+						pass
+					else:
+						preview_instance = Preview(youtube_video_id=yt_check,type="youtube")
+					preview_instance.save()
 					event.previews.add(preview_instance)
 
-				artist_instance.save()
-				genre_instance.save()
-				preview_instance.save()
-				event.save()
+				return redirect('profile')
+			
+			else:
+				# return redirect('profile')
+				raise Exception(a_e_form.errors)
 		else:
 			raise Exception(request.POST)
 
@@ -139,7 +158,17 @@ def register(request):
 				)
 			user.save()
 			return redirect('logout')
+		else:
+			# return redirect('')
+			raise Exception(form.errors)
 	else: #its a get
 		form = RegistrationForm()
 		args = {'form': form}
 		return render(request, 'register.html', args)
+
+
+def check_preview_for_youtube(preview):
+	if 'youtube.com/watch?v=' in preview:
+		return preview[preview.find('watch?v='):]
+	else:
+		return None

@@ -12,13 +12,14 @@ class VenueForm(forms.ModelForm):
 
 class EventForm(forms.ModelForm):
 	previews = forms.CharField()
+	artists = forms.CharField()
+	date = forms.DateField(
+        widget=DateTimePickerInput(format='%d/%m/%Y %H:%M'),
+        input_formats=['%d/%m/%Y %H:%M'],
+    )
 	class Meta:
 		model = Event
-		widget = {
-			# 'datetime': DateTimePickerInput(format='%H:%M/%d/%m/%y'),
-			'datetime': DateTimePickerInput(format='%H:%M/%d/%m/%y'),
-		}
-		fields = ['name', 'venue', 'description', 'price', 'official_page', 'genres', 'image', 'datetime']
+		fields = ['name', 'venue', 'description', 'price', 'official_page', 'genres', 'image',]
 
 class VenueBookmarkForm(forms.Form):
 	venue = forms.ChoiceField(

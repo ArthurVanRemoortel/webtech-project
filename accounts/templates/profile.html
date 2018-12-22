@@ -1,12 +1,11 @@
 {% extends 'layout.html'%}
 {% load widget_tweaks %}
 {% load static %}
-{{ event_form.media }}
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+{% block extrahead %}
 	{{ event_form.media }}
     <!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
     <meta charset="UTF-8">
@@ -20,7 +19,8 @@
   		align-items: center;
 	}
 	</style>
-</head>
+{% endblock %}
+
 <div class="container jumbotron vertical-center">
     <div class="row">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueModalCenter">
@@ -92,7 +92,7 @@
                         </div>
                         <div class="modal-body">
                             {% csrf_token %}
-							{% for hidden in form.hidden_fields %}
+							{% for hidden in event_form.hidden_fields %}
                         	{{ hidden }}
                         	{% endfor %}
                             <div class="form-group mb-3">
@@ -100,15 +100,16 @@
                                 {% render_field event_form.name class="form-control" %}
                             </div>
                             <div class="form-group mb-3">
-                                <label>Date</label>
-                                {% render_field event_form.datetime class="form-control" %}
-                            </div>
+                            <label>Date</label>
+                            	{% render_field event_form.date class="form-control" %}
+                        	</div>
                             <div class="form-group">
                                 <label>Venue</label>
                                 {% render_field event_form.venue class="form-control" %}
                             </div>
                             <div class="form-group mb-3">
                                 <label>Artist(s)</label>
+                                <small class="form-text text-muted">separated by commas</small>
                                 {% render_field event_form.artists class="form-control" %}
                             </div>
                             <div class="form-group mb-3">
@@ -125,7 +126,8 @@
                             </div>
                             <div class="form-group mb-1">
                                 <label>Previews</label>
-                                {% render_field event_form.preview_links class="form-control" rows=5%}
+                                <small class="form-text text-muted">separated by commas</small>
+                                {% render_field event_form.previews class="form-control" rows=5%}
                                 <br>
                             </div>
                             <div class="form-row mb-2">
@@ -138,7 +140,7 @@
                                 </div>
                                 <div class="form-group col-md-6 input-group mb-2">
                                     <div class="custom-file">
-                                        {% render_field event_form.event_image class="custom-file-input" %}
+                                        {% render_field event_form.image class="custom-file-input" %}
                                         <label class="custom-file-label">Choose file</label>
                                     </div>
                                 </div>

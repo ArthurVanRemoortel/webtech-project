@@ -138,6 +138,8 @@
             }
         }
     </style>
+    {% block extrahead %}
+    {% endblock %}
 </head>
 
 {% load bootstrap4 %}
@@ -160,8 +162,9 @@
         </ul>
         <form class="form-inline">
             <div class="form-group">
-                <button class="btn btn-outline-success mr-sm-2" type="submit">Log in</button>
-                <button class="btn btn-outline-success my-sm-0 pl-2" type="submit">Sign up</button>
+                <a href="{% url 'login' %}">
+                <button class="btn btn-outline-success mr-sm-2" type="submit">Log in</button></a>
+                <a href="{% url 'register' %}"><button class="btn btn-outline-success my-sm-0 pl-2" type="submit">Sign up</button></a>
             </div>
         </form>
     </div>
