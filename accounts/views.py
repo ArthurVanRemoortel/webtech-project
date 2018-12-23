@@ -37,8 +37,10 @@ class Profile(View):
 
             venue_bookmarks = current_user_profile.bookmarked_venues.all()
             event_bookmarks = current_user_profile.bookmarked_event.all()
-            bookmarks = {'event_bookmarks': event_bookmarks, 'venue_bookmarks': venue_bookmarks}
-            context = {**context, **forms, **bookmarks}
+            owned_venues = current_user_profile.owned_venues.all()
+            info = {'event_bookmarks': event_bookmarks, 'venue_bookmarks': venue_bookmarks, 'owned_venues': owned_venues}
+
+            context = {**context, **forms, **info}
             return render(request, 'profile.html', context)
         else:
             return redirect('login')
