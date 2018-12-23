@@ -60,32 +60,27 @@ class Profile(View):
         current_user = request.user
         current_user_profile = UserProfile.objects.get(user=current_user.id)
         if 'addVenueBookmark' in request.POST:
-            v_b_form = VenueBookmarkForm(request.POST)
-            if v_b_form.is_valid():
-                chosen_venue = v_b_form.cleaned_data['venue']
-                venue_obj = Venue.objects.get(id=chosen_venue)
-                # try:
-                #     current_user_profile.bookmarked_venues.add(chosen_venue)
-                # except IntegrityError:
-                #     pass  # in case it's already a bookmark: do nothing
+            chosen_venue = request.POST['venue']
+            #this is horrible but I couldn't figure out how to reinstate the form
+            #with the post data as I've added a constructor argument to the form
+            #see addVenueForm/addEventForm to see how it should be done
+            venue_obj = Venue.objects.get(id=chosen_venue)
+            try:
                 current_user_profile.bookmarked_venues.add(venue_obj)
-                current_user_profile.save()
-                return redirect('profile')
-            else:
-                raise Exception(v_b_form.errors)
-                # return redirect('profile')
+            except IntegrityError:
+                pass  # in case it's already a bookmark: do nothing
+            current_user_profile.save()
+            return redirect('profile')
         if 'addEventBookmark' in request.POST:
-            e_b_form = EventBookmarkForm(request.POST)
-            if e_b_form.is_valid():
-                chosen_event = e_b_form.cleaned_data['event']
-                try:
-                    current_user_profile.bookmarked_event.add(chosen_event)
-                except IntegrityError:
-                    pass  # in case it's already a bookmark: do nothing
-                current_user_profile.save()
-                return redirect('profile')
-            else:
-                return redirect('profile')
+            chosen_event = request.POST['event']
+            event_obj = Event.objects.get(id=chosen_event)
+            #see addVenueBookmark
+            try:
+                current_user_profile.bookmarked_event.add(chosen_event)
+            except IntegrityError:
+                pass  # in case it's already a bookmark: do nothing
+            current_user_profile.save()
+            return redirect('profile')
         if 'addVenueForm' in request.POST:
             a_v_form = VenueForm(request.POST, request.FILES)
             if a_v_form.is_valid():
@@ -149,10 +144,9 @@ class Profile(View):
                 return redirect('profile')
 
             else:
-                # return redirect('profile')
-                raise Exception(a_e_form.errors)
+                return redirect('profile')
         else:
-            raise Exception(request.POST)
+            return redirect('profile')
 
 class EditProfile(View):
 	def get(self, request, *args, **kwargs):
