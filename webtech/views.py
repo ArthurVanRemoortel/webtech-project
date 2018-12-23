@@ -13,7 +13,7 @@ from random import randint
 import os
 from accounts.models import UserProfile
 
-from django.contrib.gis.geos import *
+from django.contrib.gis.geos.point import Point
 from django.contrib.gis.measure import D
 
 def is_artist_on_lastfm(artist):
@@ -136,7 +136,7 @@ def bookmark_event(request, event_id):
 
 
 def bookmark_venue(request, venue_id):
-    current_user = request.user 
+    current_user = request.user
     if current_user:
         event = Venue.objects.get(pk=venue_id)
         current_user.bookmarked_venues.add(event)
@@ -189,8 +189,6 @@ def events_on_date(request):
 
 
 def user_locate(request):
-    from django.contrib.gis.measure import D
-    from django.contrib.gis.geos.point import Point
     venues = []
     if request.method == 'GET':
         latlng = Point(float(request.GET['lat']), float(request.GET['lng']))
@@ -202,9 +200,9 @@ def user_locate(request):
 # ----------- Testing --------------- #
 """
 The following views are mainly intendted for testing, but will still be included because the might
-still be usefull for evaluating the project. 
+still be usefull for evaluating the project.
 
-These views will scrape some data, write/invent reviews and store them in the database. 
+These views will scrape some data, write/invent reviews and store them in the database.
 """
 
 def scrapelastfm(request):
