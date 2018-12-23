@@ -5,7 +5,6 @@ from django.db.models.functions import Length
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Avg
 from decimal import Decimal
-
 from .scripts.geocoder import Geocoder
 
 

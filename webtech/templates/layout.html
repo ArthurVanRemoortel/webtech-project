@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <!-- Latest compiled and minified CSS -->
@@ -15,129 +15,8 @@
     <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>-->
     <!-- Makes things more mobile friendly -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        .event-info {
-            padding-right: 40px;
-        }
+    <link rel="stylesheet" href="{% static 'webtech/webtech_style.css' %}">
 
-        .overflow-hidden {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-
-        .carousel-title {
-            font-size: 36pt;
-            font-weight: bold
-        }
-
-        .carousel-description {
-            font-size: 12pt;
-            font-weight: bold
-        }
-
-        .autocomplete {
-            position: relative;
-            display: inline-block;
-        }
-
-        .autocomplete-items {
-            position: absolute;
-            border: 1px solid #d4d4d4;
-            border-bottom: none;
-            border-top: none;
-            z-index: 99;
-            top: 100%;
-            left: 0;
-            right: 0;
-        }
-
-        .carousel-image {
-            height:400px;
-            object-fit:cover;
-            object-position: 0 0;
-        }
-
-        .autocomplete-items div {
-            padding: 10px;
-            cursor: pointer;
-            background-color: #fff;
-            border-bottom: 1px solid #d4d4d4;
-        }
-
-        /*when hovering an item:*/
-        .autocomplete-items div:hover {
-            background-color: #e9e9e9;
-        }
-
-        /*when navigating through the items using the arrow keys:*/
-        .autocomplete-active {
-            background-color: DodgerBlue !important;
-            color: #ffffff;
-        }
-
-        .carousel-item:after {
-            content:"";
-            display:block;
-            position:absolute;
-            top:0;
-            bottom:0;
-            left:0;
-            right:0;
-            background:linear-gradient(to bottom, transparent, #282c34);
-            opacity: 0.7;
-        }
-
-        .card-title {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-
-        .venue-review{
-            height: 150px;
-        }
-
-        .line-overflow-5 {
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 5;
-            -webkit-box-orient: vertical;
-        }
-        .line-overflow-2 {
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-
-
-        @media only screen and (max-width: 575px) {
-            div.event-info {
-                order: -1;
-                margin: auto;
-                margin-bottom: 20px;
-                padding-top: 15px;
-                width: 90%;
-                border-color: lightslategrey;
-                border-style: solid;
-                border-width: 2px;
-                border-radius: 15px;
-            }
-            h5.event-title {
-                font-size: 26pt;
-                padding-left: 6px;
-            }
-            .carousel-title {
-                font-size: 16pt;
-                font-weight: bold
-            }
-            .carousel-image {
-                height: 300px;
-            }
-        }
-    </style>
     {% block extrahead %}
     {% endblock %}
 </head>

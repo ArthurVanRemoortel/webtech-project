@@ -132,7 +132,7 @@ def bookmark_event(request, event_id):
     current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
     if current_user:
         event = Event.objects.get(pk=event_id)
-        current_user.bookmarked_events.add(event)
+        current_user.bookmarked_event.add(event)
         return HttpResponse("OK")
 
 
