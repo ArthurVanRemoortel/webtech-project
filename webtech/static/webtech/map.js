@@ -133,6 +133,6 @@ $( document ).ready(function() {
         map.on('locationfound', userLocation).locate();
     } else {
         map.setView(dest, 15);
-        map.on('locationfound', userLocation).setView(user_location, 15).locate();
+        map.on('locationfound', userLocation).locate().setView(user_location, 15);
     }
 });
