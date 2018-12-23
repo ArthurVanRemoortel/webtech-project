@@ -154,27 +154,57 @@
                 </div>
             </div>
         </div>
-        <div class="container personal-info">
+        <a href="edit/"><button type="button" class="btn">
+        	Edit profile
+        </button></a>
+        <div class="container personal-info vertical-center">
+        	<!-- personal info -->
             <div class="col-md-4 text-center">
                 <h2>
 				{{ profile.username }}
 				</h2>
+				<p>{{ profile.bio }}</p>
+				{% if profile.website %}
+                <a href="{{ profile.website }}"></a><button class="btn">Personal website</button>
+                {% endif %}
             </div>
+            <!-- owned venues -->
             <div class="col-md-4">
-                <p>{{ profile.bio }}</p>
+            	<!-- creative use of bootstrap lists -->
+				<li class="list-group-item active text-center">Owner of</li>
+            	{% for venues in owned_venues %}
+            	<a href="/webtech/venues/{{ venues.id }}">
+            	<li class="list-group-item">{{ venues }}</li>
+            	</a>
+            	{% empty %}
+            	no venues.
+            	{% endfor %}
             </div>
+            <!-- bookmarks -->
             <div class="col-md-4">
-                My bookmarked venues are
+            	<ul>
+            	<li class="list-group-item active text-center">Bookmarked venues
+            		<a class="text-light" data-toggle="modal" data-target="#addVenueBookmark" href="#">(+)</a>
+            	</li>
                 {% for venues in venue_bookmarks %}
-                {{ venues }},
+                <a href="/webtech/venues/{{ venues.id }}">
+                <li class="list-group-item">{{ venues }}</li>
+            	</a>
                 {% endfor %}
-                and my bookmarked events are
-                {% for events in event_bookmarks %}
-                {{ events }},
-                {% endfor %}
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
+                <!-- <button type="button" class="list-group-item" data-toggle="modal" data-target="#addVenueBookmark">
                     Add venue bookmark
-                </button>
+                </button> -->
+                <li class="list-group-item active text-center">Bookmarked events
+                	<a class="text-light" data-toggle="modal" data-target="#addEventBookmark" href="#">
+                		(+)
+                	</a>
+                </li>
+                {% for events in event_bookmarks %}
+                <a href="/webtech/events/{{ events.id }}">
+                <li class="list-group-item">{{ events }}</li>
+            	</a>
+                {% endfor %}
+                </ul>
                 <!-- Venue bookmark modal -->
                 <div class="modal fade bd-example-modal-lg" id="addVenueBookmark" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -203,9 +233,9 @@
                     </div>
                 </div>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
+<!--                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
                     Add event bookmark
-                </button>
+                </button> -->
                 <!-- Event bookmark modal -->
                 <div class="modal fade bd-example-modal-lg" id="addEventBookmark" tabindex="-1" role="dialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">

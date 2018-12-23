@@ -63,7 +63,7 @@
                 <dd>
                     <button type="button" class="btn btn-secondary"
                             onclick="bookmark_venue('{{ venue.id }}')"
-                            {% if not user %} disabled {% endif %}>
+                            {% if not user.is_authenticated %} disabled {% endif %}>
                         <i class="far fa-bookmark"></i>
                     </button>
                 </dd>

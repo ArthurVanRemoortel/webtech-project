@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',
     'django_cleanup',
     'rest_framework',
-
+    'accounts',
     'webtech',
-    'accounts'
 ]
 
 REST_FRAMEWORK = {
@@ -94,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'database',
-        'USER': 'webtech',
+        'USER': 'user',
     },
 }
 DATABASES['default'] = dj_database_url.config(default="postgres://webtech@localhost:5432/database", conn_max_age=600)

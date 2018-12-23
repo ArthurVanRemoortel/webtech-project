@@ -1,5 +1,4 @@
 from django.urls import path, include, re_path
-from rest_framework import routers
 from . import views, api_views
 
 
@@ -13,8 +12,6 @@ urlpatterns = [
 
     path('bookmark_event/<int:event_id>', views.bookmark_event, name='bookmark_event'),
     path('bookmark_venue/<int:venue_id>', views.bookmark_venue, name='bookmark_venue'),
-    #path('add_venue_form_test', views.add_venue_form_test, name='add_venue_form_test'),
-    #path('add_event_form_test', views.add_event_form_test, name='add_event_form_test'),
 
     path('events/<int:event_id>', views.event_page, name='event_page'),
     path('venues/<int:venue_id>', views.venue_page, name='venue_page'),

@@ -13,7 +13,7 @@ class EventFilterForm(forms.Form):
     genres = forms.CharField(max_length=100, required=False)
     date = forms.DateField(input_formats=['%d/%m/%Y'],
         widget=DatePickerInput(format='%d/%m/%Y'), required=False)
-    zip = forms.CharField(max_length=100, required=False)
+    zip = forms.IntegerField(validators=[MaxValueValidator(9999), MinValueValidator(1000)], required=False)
     range = forms.CharField(max_length=20, required=False)
     distance_unit = forms.ChoiceField(
         choices=[(0, "m"), (1, "km")],

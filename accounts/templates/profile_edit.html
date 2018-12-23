@@ -1,0 +1,48 @@
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+{% block extrahead %}
+{{ event_form.media }}
+<!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
+<meta charset="UTF-8">
+<title>{{ profile.username }}'s profile</title>
+<style>
+    .vertical-center {
+    min-height: 100%;
+    /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+}
+</style>
+{% endblock %}
+<div class="container jumbotron vertical-center">
+    <div class="row">
+        <a href=".."><button type="button" class="btn btn-danger">Discard changes</button></a>
+        <div class="jumbotron">
+            <div class="container personal-info vertical-center">
+                <div class="col-md-6 text-center ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <h2>
+                {{ form.username }}
+                </h2>
+                        {{ form.bio }}
+                        {{ form.website }}
+                        <button type="submit" class="btn" name="editProfileForm">Submit changes</button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    Modify owned venues
+                    <!-- use same list-ish view as on the profile page
+                    but make clickable with modals -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
