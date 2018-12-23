@@ -1,0 +1,239 @@
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block extrahead %}
+	{{ event_form.media }}
+    <!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
+    <meta charset="UTF-8">
+    <title>{{ profile.username }}'s profile</title>
+    <style>
+        .vertical-center {
+ 		min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  		min-height: 100vh;
+
+  		display: flex;
+  		align-items: center;
+	}
+	</style>
+{% endblock %}
+
+<div class="container jumbotron vertical-center">
+    <div class="row">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueModalCenter">
+            Add venue
+        </button>
+        <!-- Venue modal -->
+        <div class="modal fade bd-example-modal-lg" id="addVenueModalCenter" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form method="post" enctype="multipart/form-data">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addVenueModal">Please add a venue you are the owner of</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Venue Name</label>
+                                {% render_field venue_form.name class="form-control" %}
+                            </div>
+                            <div class="form-group">
+                                <label for="adress">Address</label>
+                                <small class="form-text text-muted">Please make sure the address is typed correctly</small>
+                                {% render_field venue_form.address class="form-control" %}
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="description">Add a description for your venue.</label>
+                                {% render_field venue_form.description class="form-control" %}
+                            </div>
+                            <div class="form-group mt-2">
+                                <label>Venue Image</label>
+                                <div class="custom-file">
+                                    {% render_field venue_form.image|add_class:'custom-file-input' %}
+                                    <label class="custom-file-label">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" name="addVenueForm">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventModalCenter">
+            Add event
+        </button>
+        <!-- Event modal -->
+        <div class="modal fade bd-example-modal-lg" id="addEventModalCenter" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form method="post" enctype="multipart/form-data">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleAddEventLongTitle">Add an event to your venue.</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <!--Content-->
+                        <div class="container">
+                            <p class="lead">
+                                Please fill in the details
+                            </p>
+                        </div>
+                        <div class="modal-body">
+                            {% csrf_token %}
+							{% for hidden in event_form.hidden_fields %}
+                        	{{ hidden }}
+                        	{% endfor %}
+                            <div class="form-group mb-3">
+                                <label>Event Name</label>
+                                {% render_field event_form.name class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                            <label>Date</label>
+                            	{% render_field event_form.date class="form-control" %}
+                        	</div>
+                            <div class="form-group">
+                                <label>Venue</label>
+                                {% render_field event_form.venue class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Artist(s)</label>
+                                <small class="form-text text-muted">separated by commas</small>
+                                {% render_field event_form.artists class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Description</label>
+                                {% render_field event_form.description class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Genre</label>
+                                {% render_field event_form.genres class="form-control" %}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Official Page</label>
+                                {% render_field event_form.official_page class="form-control" %}
+                            </div>
+                            <div class="form-group mb-1">
+                                <label>Previews</label>
+                                <small class="form-text text-muted">separated by commas</small>
+                                {% render_field event_form.previews class="form-control" rows=5%}
+                                <br>
+                            </div>
+                            <div class="form-row mb-2">
+                                <div class="col-md-6 input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">€</div>
+                                    </div>
+                                    {% render_field event_form.price class="form-control" %}
+                                    <small class="form-text text-muted">'free' or price in euros</small>
+                                </div>
+                                <div class="form-group col-md-6 input-group mb-2">
+                                    <div class="custom-file">
+                                        {% render_field event_form.image class="custom-file-input" %}
+                                        <label class="custom-file-label">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" name="addEventForm">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container personal-info">
+            <div class="col-md-4 text-center">
+                <h2>
+				{{ profile.username }}
+				</h2>
+            </div>
+            <div class="col-md-4">
+                <p>{{ profile.bio }}</p>
+            </div>
+            <div class="col-md-4">
+                My bookmarked venues are
+                {% for venues in venue_bookmarks %}
+                {{ venues }},
+                {% endfor %}
+                and my bookmarked events are
+                {% for events in event_bookmarks %}
+                {{ events }},
+                {% endfor %}
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
+                    Add venue bookmark
+                </button>
+                <!-- Venue bookmark modal -->
+                <div class="modal fade bd-example-modal-lg" id="addVenueBookmark" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="post" enctype="multipart/form-data">
+                                <!--Header-->
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addVenueBookmark">Please choose a venue to add to your bookmarks</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <!-- <label>Venue Name</label> -->
+                                        {% render_field venue_bookmark_form.venue class="form-control" %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="addVenueBookmark">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventBookmark">
+                    Add event bookmark
+                </button>
+                <!-- Event bookmark modal -->
+                <div class="modal fade bd-example-modal-lg" id="addEventBookmark" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="post" enctype="multipart/form-data">
+                                <!--Header-->
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addEventBookmark">Please choose an event to add to your bookmarks</h5>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        {% render_field event_bookmark_form.event class="form-control" %}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="addEventBookmark">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

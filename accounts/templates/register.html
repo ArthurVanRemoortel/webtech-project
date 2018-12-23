@@ -1,0 +1,43 @@
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load bootstrap4 %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+    .vertical_center {
+ 		min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  		min-height: 100vh;
+
+  		display: flex;
+  		align-items: center;
+	}
+	
+</style>
+</head>
+
+<div class="container vertical_center">
+	<div class="container offset-md-4">
+		<h1>Welcome</h1>
+	<h4>Please sign up below.</h4>
+	<form method="post">
+		{% csrf_token %}
+		{% for field in form.visible_fields %}
+		    <div class="form-group">
+		      {{ field.label_tag }}
+		      {{ field }}
+		      {% if field.help_text %}
+		        <small class="form-text text-muted">{{ field.help_text }}</small>
+		      {% endif %}
+		    </div>
+		{% endfor %}
+		<button type="submit" class="btn btn-default">Register</button>
+	</form>
+	</div>
+</div>
+{% endblock %}

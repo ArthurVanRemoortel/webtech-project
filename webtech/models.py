@@ -128,25 +128,3 @@ class VenueReview(models.Model):
     def __str__(self):
         return "{}: {}...".format(self.score, self.text[:15])
 
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=20) #set default as User' username
-    bio = models.CharField(max_length=500, default='')
-    website = models.URLField(default='', blank=True, null=True)
-    registered = models.DateTimeField(auto_now=True)
-    bookmarked_venues = models.ManyToManyField('Venue', related_name='bookmarked_by')
-    bookmarked_events = models.ManyToManyField('Event', related_name='bookmarked_by')
-    owned_venues = models.ForeignKey('Venue', on_delete=models.CASCADE, related_name='owner', blank=True, null=True)
-
-    def __str__(self):
-        return self.username
-
-
-#creates UserProfile when a User is made
-def create_profile(sender, **kwargs):
-    if kwargs['created']:
-        current_user = kwargs['instance']
-        user_profile = UserProfile.objects.create(user=current_user, bio="Fill in your profile bio!", username=current_user.username)
-
-post_save.connect(create_profile, sender=User)

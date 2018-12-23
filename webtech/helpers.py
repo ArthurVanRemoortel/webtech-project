@@ -34,15 +34,11 @@ LOREM_2_P = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " \
             "nunc placerat. Ut id placerat magna."
 
 
-def erase_everything():
-    Event.objects.all().delete()
-    Artist.objects.all().delete()
-    Preview.objects.all().delete()
-    Genre.objects.all().delete()
-    Venue.objects.all().delete()
-    VenueReview.objects.all().delete()
-
 def django_image_from_url(url):
+    """
+    Used by the scrapers. Downloads an image and stores it in a django-firendly image object so it can easely be
+    used as input for a image-field in a model.
+    """
     response = requests.get(url)
     image = Image.open(BytesIO(response.content))
     file = BytesIO()
@@ -53,7 +49,12 @@ def django_image_from_url(url):
         image_name += '.jpg'
     return ContentFile(file.read(), image_name)
 
+
 def django_image_from_file(path):
+    """
+    Used by the scrapers. Reads an image file and stores it in a django-firendly image object so it can easely be
+    used as input for a image-field in a model.
+    """
     image = Image.open(path)
     file = BytesIO()
     image.save(file, 'JPEG')

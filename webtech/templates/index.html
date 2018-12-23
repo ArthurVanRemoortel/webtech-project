@@ -13,13 +13,12 @@
 
 <body style="padding-top: 50px">
 
-<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+<div id="carouselControls" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner" style="height:30%; max-height:425px;">
         {% for carousel_event in carousel_events %}
         <div class="carousel-item {% if forloop.counter0 == 0 %} active {% endif %}">
             <a href="events/{{ carousel_event.id }}">
-                <img class="d-block w-100 carousel-image" src="{{ carousel_event.image.url }}"
-                >
+                <img class="d-block w-100 carousel-image" src="{{ carousel_event.image.url }}">
                 <div class="carousel-caption d-md-block"
                      style="text-align: left;
                             text-shadow: 1px 1px 0 rgba(0,0,0,.75);">
@@ -37,11 +36,11 @@
         </div>
         {% endfor %}
     </div>
-    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+    <a class="carousel-control-prev" href="#carouselControls" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
     </a>
-    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+    <a class="carousel-control-next" href="#carouselControls" role="button" data-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
     </a>
@@ -66,7 +65,6 @@
                     <button class="btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapsibleFilter">Filter</button>
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </div>
-
             </div>
         </div>
         <br>
@@ -99,8 +97,6 @@
                     <div class="input-group-append">
                         {% render_field form.distance_unit class="custom-select form-control"%}
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -114,7 +110,6 @@
                         <img class="card-img-top" style="height: 230px; object-fit: cover"
                              src={{ result.image.url }}>
                     </a>
-
                     <div class="card-body pb-0">
                         <h5 class="card-title">{{ result.name }}</h5>
                         <p class="card-text line-overflow-5">{{ result.description }}</p>
@@ -197,25 +192,17 @@
 
     /* Everything bellow is a modified version of https://www.w3schools.com/howto/howto_js_autocomplete.asp */
     function autocomplete(inp, arr) {
-        /*the autocomplete function takes two arguments,
-        the text field element and an array of possible autocompleted values:*/
         var currentFocus;
-        /*execute a function when someone writes in the text field:*/
         inp.addEventListener("input", function(e) {
             var a, b, i, val = this.value;
-            /*close any already open lists of autocompleted values*/
             closeAllLists();
             if (!val) { return false;}
             currentFocus = -1;
-            /*create a DIV element that will contain the items (values):*/
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
-            /*append the DIV element as a child of the autocomplete container:*/
             this.parentNode.appendChild(a);
-            /*for each item in the array...*/
             for (i = 0; i < arr.length; i++) {
-                /*check if the item starts with the same letters as the text field value:*/
                 let words = val.split(', ');
                 if (words[words.length-1] && arr[i].toUpperCase().includes(words[words.length-1].toUpperCase()) ) {
                     b = document.createElement("DIV");
@@ -236,50 +223,35 @@
             }
         });
 
-        /*execute a function presses a key on the keyboard:*/
         inp.addEventListener("keydown", function(e) {
             var x = document.getElementById(this.id + "autocomplete-list");
             if (x) x = x.getElementsByTagName("div");
             if (e.keyCode == 40) {
-                /*If the arrow DOWN key is pressed,
-                increase the currentFocus variable:*/
                 currentFocus++;
-                /*and and make the current item more visible:*/
                 addActive(x);
-            } else if (e.keyCode == 38) { //up
-                /*If the arrow UP key is pressed,
-                decrease the currentFocus variable:*/
+            } else if (e.keyCode == 38) {
                 currentFocus--;
-                /*and and make the current item more visible:*/
                 addActive(x);
             } else if (e.keyCode == 13) {
-                /*If the ENTER key is pressed, prevent the form from being submitted,*/
                 e.preventDefault();
                 if (currentFocus > -1) {
-                    /*and simulate a click on the "active" item:*/
                     if (x) x[currentFocus].click();
                 }
             }
         });
         function addActive(x) {
-            /*a function to classify an item as "active":*/
             if (!x) return false;
-            /*start by removing the "active" class on all items:*/
             removeActive(x);
             if (currentFocus >= x.length) currentFocus = 0;
             if (currentFocus < 0) currentFocus = (x.length - 1);
-            /*add class "autocomplete-active":*/
             x[currentFocus].classList.add("autocomplete-active");
         }
         function removeActive(x) {
-            /*a function to remove the "active" class from all autocomplete items:*/
             for (var i = 0; i < x.length; i++) {
                 x[i].classList.remove("autocomplete-active");
             }
         }
         function closeAllLists(elmnt) {
-            /*close all autocomplete lists in the document,
-            except the one passed as an argument:*/
             var x = document.getElementsByClassName("autocomplete-items");
             for (var i = 0; i < x.length; i++) {
                 if (elmnt != x[i] && elmnt != inp) {
@@ -287,16 +259,12 @@
                 }
             }
         }
-        /*execute a function when someone clicks in the document:*/
         document.addEventListener("click", function (e) {
             closeAllLists(e.target);
         });
     }
-
     autocomplete(document.getElementById("genreInput"), {{ all_genres|safe }} );
 </script>
-
-
 </body>
 </html>
 {% endblock %}
