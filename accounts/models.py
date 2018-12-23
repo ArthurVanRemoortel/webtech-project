@@ -10,8 +10,8 @@ class UserProfile(models.Model):
 	bio = models.CharField(max_length=500, default='Please enter your bio!')
 	website = models.URLField(default='')
 	registered = models.DateTimeField(auto_now=True)
-	bookmarked_venues = models.ManyToManyField(to=Venue)
-	bookmarked_event = models.ManyToManyField(to=Event)
+	bookmarked_venues = models.ManyToManyField(to=Venue, blank=True)
+	bookmarked_event = models.ManyToManyField(to=Event, blank=True)
 	owned_venues = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='owner',null=True)
 
 	def __str__(self):
