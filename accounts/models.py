@@ -13,7 +13,7 @@ class UserProfile(models.Model):
 	bookmarked_venues = models.ManyToManyField(to=Venue, blank=True)
 	bookmarked_event = models.ManyToManyField(to=Event, blank=True)
 	owned_venues = models.ManyToManyField(to=Venue, blank=True, related_name='owner')
-
+	reviews = models.ManyToManyField(VenueReview, blank=True, related_name='author')
 	def __str__(self):
 		return self.username
 
