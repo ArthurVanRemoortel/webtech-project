@@ -84,7 +84,12 @@ def index(request):
                 longitude = form.cleaned_data['longitude']
                 ref_location = Point(latitude, longitude)
                 if not ref_location.empty:
-                    search_results_events = search_results_events.filter(venue__point__distance_lte=(ref_location, D(m=distance)))
+                    search_results_events = search_results_events.filter(
+                        venue__point__distance_lte=(ref_location, D(m=distance)))
+
+            if zip:
+                search_results_events = search_results_events.filter(
+                    venue__address_nl__icontains=zip)
 
             request.session['current-search'] = request.POST
             if last_page_post_data is None:
@@ -204,63 +209,6 @@ still be usefull for evaluating the project.
 
 These views will scrape some data, write/invent reviews and store them in the database. 
 """
-
-# def add_venue_form_test(request):
-#     context = {}
-#     if request.method == 'POST':
-#         form = AddVenueForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             venue_name = form.cleaned_data['venue_name']
-#             address = form.cleaned_data['address']
-#             try:
-#                 address_fr, address_nl, point = Geocoder().geocode(address)
-#                 description = form.cleaned_data['description']
-#                 venue_image = form.cleaned_data['venue_image']
-#                 venue_instance = Venue(
-#                     name=venue_name,
-#                     point=point,
-#                     address_fr=address_fr,
-#                     address_nl=address_nl,
-#                     description=description,
-#                     image=venue_image
-#                 )
-#                 venue_instance.save()
-#             except ValueError:
-#                 form = AddVenueForm()
-#     else:
-#         form = AddVenueForm()
-#     context['form'] = form
-#     return render(request, 'add_venue_form.html', context)
-#
-#
-# def add_event_form_test(request):
-#     context = {}
-#     if request.method == 'POST':
-#         form = AddEventToVenueForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             event_name = form.cleaned_data['event_name']
-#             venue_id = form.cleaned_data['venue'].id
-#             artists_raw = form.cleaned_data['artists']
-#             description = form.cleaned_data['description']
-#             price_strig = form.cleaned_data['price']
-#             price = 0 if "free" in price_strig.lower() else float(price_strig)
-#             event_image = form.cleaned_data['event_image']
-#             date = form.cleaned_data['date']
-#             venue_object = Venue.objects.get(id=venue_id)
-#             event_instance = Event(name=event_name, venue=venue_object, description=description, price=price, image=event_image, datetime=date)
-#             event_instance.save()
-#
-#             for artist in artists_raw.split(','):
-#                 last_fm_exists = is_artist_on_lastfm(artist)
-#                 artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
-#                 artist_instance.save()
-#                 artist_instance.events.add(event_instance)
-#     else:
-#         form = AddEventToVenueForm()
-#     context['form'] = form
-#
-#     return render(request, 'add_event_form.html', context)
-
 
 def scrapelastfm(request):
     """
