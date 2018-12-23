@@ -28,6 +28,7 @@ class EventForm(forms.ModelForm):
         widget=DateTimePickerInput(format='%d/%m/%Y %H:%M'),
         input_formats=['%d/%m/%Y %H:%M'],
     )
+	genres = forms.CharField()
 	class Meta:
 		model = Event
 		fields = ['name', 'venue', 'description', 'price', 'official_page', 'genres', 'image',]

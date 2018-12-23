@@ -9,4 +9,4 @@ __pycache__
 */migrations/
 
 # no user uploaded content
-media/
+media/images/uploaded

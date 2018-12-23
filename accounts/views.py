@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.views import View
 from accounts.forms import VenueForm, EventForm, VenueBookmarkForm, EventBookmarkForm, RegistrationForm, EditProfileForm
 from accounts.models import UserProfile
-from webtech.models import Venue, Event, Artist, Preview
+from webtech.models import Venue, Event, Artist, Preview, Genre
 from django.contrib.auth.models import User
 from webtech.scripts.geocoder import Geocoder
 from webtech.views import is_artist_on_lastfm
 
 
+#simple redirect
 def home(request):
     current_user = request.user
     if current_user.is_authenticated:
@@ -107,7 +108,7 @@ class Profile(View):
                 price_input = a_e_form.cleaned_data['price']
                 venue_object = a_e_form.cleaned_data['venue']
                 artists = a_e_form.cleaned_data['artists']
-                genres = a_e_form.cleaned_data['genres']
+                genres_text = a_e_form.cleaned_data['genres']
                 previews = a_e_form.cleaned_data['previews']
 
                 event = Event(
@@ -129,8 +130,10 @@ class Profile(View):
                     artist_instance = Artist(name=artist, last_fm_entry_exists=last_fm_exists)
                     artist_instance.save()
                     artist_instance.events.add(event)
-                for genre in genres:
-                    event.genres.add(genre)
+                for genre in genres_text.split(','):
+                    genre_instance = Genre(name=genre[:19])
+                    genre_instance.save()
+                    event.genres.add(genre_instance)
                 for preview in previews.split(','):
                     yt_check = check_preview_for_youtube(preview)
                     if yt_check is None:
@@ -148,6 +151,8 @@ class Profile(View):
         else:
             return redirect('profile')
 
+#the view for editing a profile
+#have to pass the initial values for the forms out of the db
 class EditProfile(View):
 	def get(self, request, *args, **kwargs):
 		current_user = request.user
@@ -182,6 +187,7 @@ class EditProfile(View):
 		else:
 			return redirect('profile')
 
+#view for registering as a user
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
