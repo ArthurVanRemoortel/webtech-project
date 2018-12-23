@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'bootstrap_datepicker_plus',
     'django_cleanup',
     'rest_framework',
+    'accounts',
     'webtech',
-    'accounts'
 ]
 
 REST_FRAMEWORK = {

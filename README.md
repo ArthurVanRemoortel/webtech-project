@@ -1,7 +1,5 @@
 # webtech-project
 
-Use the "website" folder. "website_arthur" is ~~badly configured and outdated~~ deleted.
-
 #### Dependencies:
 
 * [django-bootstrap4](https://pypi.org/project/django-bootstrap4/)
@@ -12,4 +10,13 @@ Use the "website" folder. "website_arthur" is ~~badly configured and outdated~~ 
 * [djangorestframework](https://pypi.org/project/djangorestframework/)
 * [geopy](https://pypi.org/project/geopy/)
 * [htmldom](https://pypi.org/project/htmldom/)
-* Just do `pip3 install -r requirements.txt`
+* [requests](https://pypi.org/project/requests/)
+* [Pillow](https://pypi.org/project/requests/)
+* [whitenoise](https://pypi.org/project/whitenoise/)
+* [pytz](https://pypi.org/project/pytz/)
+* [gunicorn](https://pypi.org/project/gunicorn/)
+* [dj_database_url](https://pypi.org/project/dj-database-url/)
+* [django-heroku](https://pypi.org/project/django-heroku/)
+
+Install these dependencies by using `pip3 install -r requirements.txt`
+

@@ -125,7 +125,7 @@
                             <div class="btn-group mr-2 btn-group-sm " role="group">
                                 <button type="button" class="btn btn-secondary"
                                         onclick="bookmark_event('{{ result.id }}')"
-                                        {% if not user %} disabled {% endif %}>
+                                        {% if not user.is_authenticated %} disabled {% endif %}>
                                     <i class="far fa-bookmark"></i>
                                 </button>
                                 <a href="{% url 'map' %}{{ result.id }}" class="btn btn-secondary">
