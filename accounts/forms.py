@@ -5,21 +5,15 @@ from webtech.models import Venue, Event
 from accounts.models import UserProfile
 from bootstrap_datepicker_plus import DateTimePickerInput
 
-#venues, events in different form
+
+# class EditVenueForm(forms.ModelForm):
+
+
 class EditProfileForm(forms.ModelForm):
 	bio = forms.CharField(widget=forms.Textarea)
 	class Meta:
 		model = UserProfile
 		fields = ['username', 'bio', 'website']
-	# username = forms.CharField()
-	# bio = forms.TextField()
-	# website = forms.URLField()
-
-	# owned_venues = ChoiceField(
-	# 	choices = 
-	# )
-	# bookmarked_venues =
-	# bookmarked_events = 
 
 class VenueForm(forms.ModelForm):
 	address = forms.CharField()
@@ -39,14 +33,16 @@ class EventForm(forms.ModelForm):
 		fields = ['name', 'venue', 'description', 'price', 'official_page', 'genres', 'image',]
 
 class VenueBookmarkForm(forms.Form):
-	venue = forms.ChoiceField(
-        choices=[(o.id, str(o.name)) for o in Venue.objects.all()]
-    )
+    venue = forms.ChoiceField()
+    def __init__(self, choices, *args, **kwargs):
+        super(VenueBookmarkForm, self).__init__()
+        self.fields['venue'] = forms.ChoiceField(choices=choices)
 
 class EventBookmarkForm(forms.Form):
-	event = forms.ChoiceField(
-		choices=[(o.id, str(o.name)) for o in Event.objects.all()]
-		)
+    event = forms.ChoiceField()
+    def __init__(self, choices, *args, **kwargs):
+        super(EventBookmarkForm, self).__init__()
+        self.fields['event'] = forms.ChoiceField(choices=choices)
 
 class RegistrationForm(UserCreationForm):
 	email = forms.EmailField(label='Email')

@@ -25,7 +25,7 @@
         <a href=".."><button type="button" class="btn btn-danger">Discard changes</button></a>
         <div class="jumbotron">
             <div class="container personal-info vertical-center">
-                <div class="col-md-4 text-center ">
+                <div class="col-md-6 text-center ">
                     <form method="post">
                         {% csrf_token %}
                         <h2>
@@ -36,24 +36,10 @@
                         <button type="submit" class="btn" name="editProfileForm">Submit changes</button>
                     </form>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     Modify owned venues
-                </div>
-                <div class="col-md-4">
-                    I own
-                    {% for venues in owned_venues %}
-                    <li class="owned-venue">{{ venues }}</li>
-                    {% empty %}
-                    no venues.
-                    {% endfor %}
-                    My bookmarked venues are
-                    {% for venues in venue_bookmarks %}
-                    <li class="bookmarked-venue">{{ venues }}</li>
-                    {% endfor %}
-                    and my bookmarked events are
-                    {% for events in event_bookmarks %}
-                    <li class="bookmarked-event">{{ events }}</li>
-                    {% endfor %}
+                    <!-- use same list-ish view as on the profile page
+                    but make clickable with modals -->
                 </div>
             </div>
         </div>

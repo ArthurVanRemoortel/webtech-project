@@ -12,7 +12,6 @@ class UserProfile(models.Model):
 	registered = models.DateTimeField(auto_now=True)
 	bookmarked_venues = models.ManyToManyField(to=Venue, blank=True)
 	bookmarked_event = models.ManyToManyField(to=Event, blank=True)
-	reviews = models.ForeignKey(VenueReview, on_delete=models.CASCADE, related_name='author')
 	owned_venues = models.ManyToManyField(to=Venue, blank=True, related_name='owner')
 
 	def __str__(self):

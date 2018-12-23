@@ -26,8 +26,12 @@ class Profile(View):
             'venue_form': VenueForm(),
             'event_form': EventForm(),
 
-            'venue_bookmark_form': VenueBookmarkForm(),
-            'event_bookmark_form': EventBookmarkForm(),
+            'venue_bookmark_form': VenueBookmarkForm(
+            		choices=[(o.id, str(o.name)) for o in Venue.objects.all()]	
+            	),
+            'event_bookmark_form': EventBookmarkForm(
+            		choices=[(o.id, str(o.name)) for o in Event.objects.all()]
+            	),
         }
         context = {}
         current_user = request.user
@@ -59,14 +63,17 @@ class Profile(View):
             v_b_form = VenueBookmarkForm(request.POST)
             if v_b_form.is_valid():
                 chosen_venue = v_b_form.cleaned_data['venue']
-                try:
-                    current_user_profile.bookmarked_venues.add(chosen_venue)
-                except IntegrityError:
-                    pass  # in case it's already a bookmark: do nothing
+                venue_obj = Venue.objects.get(id=chosen_venue)
+                # try:
+                #     current_user_profile.bookmarked_venues.add(chosen_venue)
+                # except IntegrityError:
+                #     pass  # in case it's already a bookmark: do nothing
+                current_user_profile.bookmarked_venues.add(venue_obj)
                 current_user_profile.save()
                 return redirect('profile')
             else:
-                return redirect('profile')
+                raise Exception(v_b_form.errors)
+                # return redirect('profile')
         if 'addEventBookmark' in request.POST:
             e_b_form = EventBookmarkForm(request.POST)
             if e_b_form.is_valid():
@@ -84,7 +91,7 @@ class Profile(View):
             if a_v_form.is_valid():
                 address = a_v_form.cleaned_data['address']
                 address_fr, address_nl, point = Geocoder().geocode(address)
-                # todo: update owned venues
+                
                 venue = Venue(
                     name=a_v_form.cleaned_data['name'],
                     point=point,
@@ -94,6 +101,8 @@ class Profile(View):
                     image=a_v_form.cleaned_data['image'],
                 )
                 venue.save()
+                current_user_profile.owned_venues.add(venue)
+                
                 return redirect('profile')
             else:
                 return redirect('profile')
