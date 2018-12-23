@@ -14,7 +14,6 @@ import os
 
 from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
-from accounts.models import UserProfile
 
 def is_artist_on_lastfm(artist):
     """
