@@ -82,13 +82,16 @@ $('#find-nearby-venues').click(function() {
 var event_markers = L.layerGroup().addTo(map);
 
 function event_marker_content(evt) {
-    var html = `<p class="event-marker">${evt.date}: ${evt.name}<br>`;
+    var html = `<p class="event-marker">${evt.date}: <a href="../events/${evt.id}">${evt.name}</a><br>`;
     html += `${evt.weekday}, ${evt.time} @ ${evt.venue}<br>`;
-    html += 'line-up:<ul>';
-    for (artist of evt.artists) {
-        html += `<li>${artist.name}</li>`;
-    };
-    html += '</ul></p>';
+    if (evt.artists.length > 1) {
+        html += 'line-up:<ul>';
+        for (artist of evt.artists) {
+            html += `<li>${artist.name}</li>`;
+        };
+        html += '</ul>';
+    }
+    html += '</p>'
     return html;
 }
 
@@ -97,7 +100,7 @@ function event_popup(evt) {
     container.innerHTML = event_marker_content(evt);
     var btn = createButton("Go to this venue", container);
 
-    L.DomEvent.on(btn, 'click', updateRoute(e));
+    L.DomEvent.on(btn, 'click', function() {updateRoute(evt)});
 
     return L.popup({
         autoClose: false,
