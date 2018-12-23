@@ -196,7 +196,6 @@ def user_locate(request):
         latlng = Point(float(request.GET['lat']), float(request.GET['lng']))
         results = Venue.objects.filter(point__distance_lte=(latlng, D(km=5)))
         venues = '[' + ','.join(x.toJson() for x in results) + ']'
-    print(venues)
     return HttpResponse(str(venues))
 
 
