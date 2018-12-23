@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from accounts.forms import VenueForm, EventForm, VenueBookmarkForm, EventBookmarkForm, RegistrationForm
+from accounts.forms import VenueForm, EventForm, VenueBookmarkForm, EventBookmarkForm, RegistrationForm, EditProfileForm
 from accounts.models import UserProfile
 from webtech.models import Venue, Event, Artist, Preview
 from django.contrib.auth.models import User
@@ -36,7 +36,8 @@ class Profile(View):
 
 			venue_bookmarks = current_user_profile.bookmarked_venues.all()
 			event_bookmarks = current_user_profile.bookmarked_event.all()
-			bookmarks = {'event_bookmarks': event_bookmarks, 'venue_bookmarks': venue_bookmarks}
+			owned_venues = current_user_profile.owned_venues.all()
+			bookmarks = {'event_bookmarks': event_bookmarks, 'venue_bookmarks': venue_bookmarks, 'owned_venues': owned_venues}
 			context = {**context, **forms, **bookmarks}
 			return render(request, 'profile.html', context)
 		else:
@@ -142,6 +143,39 @@ class Profile(View):
 		else:
 			raise Exception(request.POST)
 
+class EditProfile(View):
+	def get(self, request, *args, **kwargs):
+		current_user = request.user
+		if current_user.is_authenticated:
+			current_user_profile = UserProfile.objects.get(user=current_user.id)
+			context = {
+				'profile': current_user_profile,
+			}
+			initial = {
+				'username': current_user_profile.username,
+				'bio': current_user_profile.bio,
+				'website': current_user_profile.website,
+			}
+			forms = {
+				'form':EditProfileForm(initial=initial),
+			}
+			context = {**context, **forms}
+			return render(request, 'profile_edit.html', context)
+		else:
+			return redirect('login')
+	def post(self, request, *args, **kwargs):
+		current_user = request.user
+		current_user_profile = UserProfile.objects.get(user=current_user.id)
+		#todo: make modify owned venues en events form
+		if 'editProfileForm' in request.POST:
+			e_p_form = EditProfileForm(request.POST,instance=current_user_profile)
+			if e_p_form.is_valid():
+				e_p_form.save()
+				return redirect('profile')
+			else:
+				return redirect('profile')
+		else:
+			return redirect('profile')
 
 def register(request):
 	if request.method == 'POST':

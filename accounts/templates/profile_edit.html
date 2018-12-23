@@ -1,0 +1,62 @@
+{% extends 'layout.html'%}
+{% load widget_tweaks %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+{% block extrahead %}
+{{ event_form.media }}
+<!-- <link rel="stylesheet" href="{% static 'accounts/style.css' %}" type="text/css"> -->
+<meta charset="UTF-8">
+<title>{{ profile.username }}'s profile</title>
+<style>
+    .vertical-center {
+    min-height: 100%;
+    /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+}
+</style>
+{% endblock %}
+<div class="container jumbotron vertical-center">
+    <div class="row">
+        <a href=".."><button type="button" class="btn btn-danger">Discard changes</button></a>
+        <div class="jumbotron">
+            <div class="container personal-info vertical-center">
+                <div class="col-md-4 text-center ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <h2>
+                {{ form.username }}
+                </h2>
+                        {{ form.bio }}
+                        {{ form.website }}
+                        <button type="submit" class="btn" name="editProfileForm">Submit changes</button>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    Modify owned venues
+                </div>
+                <div class="col-md-4">
+                    I own
+                    {% for venues in owned_venues %}
+                    <li class="owned-venue">{{ venues }}</li>
+                    {% empty %}
+                    no venues.
+                    {% endfor %}
+                    My bookmarked venues are
+                    {% for venues in venue_bookmarks %}
+                    <li class="bookmarked-venue">{{ venues }}</li>
+                    {% endfor %}
+                    and my bookmarked events are
+                    {% for events in event_bookmarks %}
+                    <li class="bookmarked-event">{{ events }}</li>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

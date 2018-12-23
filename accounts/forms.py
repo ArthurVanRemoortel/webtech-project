@@ -2,7 +2,24 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from webtech.models import Venue, Event
+from accounts.models import UserProfile
 from bootstrap_datepicker_plus import DateTimePickerInput
+
+#venues, events in different form
+class EditProfileForm(forms.ModelForm):
+	bio = forms.CharField(widget=forms.Textarea)
+	class Meta:
+		model = UserProfile
+		fields = ['username', 'bio', 'website']
+	# username = forms.CharField()
+	# bio = forms.TextField()
+	# website = forms.URLField()
+
+	# owned_venues = ChoiceField(
+	# 	choices = 
+	# )
+	# bookmarked_venues =
+	# bookmarked_events = 
 
 class VenueForm(forms.ModelForm):
 	address = forms.CharField()

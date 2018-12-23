@@ -154,23 +154,36 @@
                 </div>
             </div>
         </div>
-        <div class="container personal-info">
+        <a href="edit/"><button type="button" class="btn">
+        	Edit profile
+        </button></a>
+        <div class="container personal-info vertical-center">
             <div class="col-md-4 text-center">
                 <h2>
 				{{ profile.username }}
 				</h2>
+				<p>{{ profile.bio }}</p>
+				{% if profile.website %}
+                <a href="{{ profile.website }}"></a><button class="btn">Personal website</button>
+                {% endif %}
             </div>
             <div class="col-md-4">
-                <p>{{ profile.bio }}</p>
+                <p>Previous events and venues I've been to</p>
             </div>
             <div class="col-md-4">
+            	I own  
+            	{% for venues in owned_venues %}
+            	<li class="owned-venue">{{ venues }}</li>
+            	{% empty %}
+            	no venues.
+            	{% endfor %}
                 My bookmarked venues are
                 {% for venues in venue_bookmarks %}
-                {{ venues }},
+                <li class="bookmarked-venue">{{ venues }}</li>
                 {% endfor %}
                 and my bookmarked events are
                 {% for events in event_bookmarks %}
-                {{ events }},
+                <li class="bookmarked-event">{{ events }}</li>
                 {% endfor %}
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addVenueBookmark">
                     Add venue bookmark

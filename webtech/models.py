@@ -5,7 +5,6 @@ from django.db.models.functions import Length
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Avg
 from decimal import Decimal
-
 from .scripts.geocoder import Geocoder
 
 
@@ -127,4 +126,3 @@ class VenueReview(models.Model):
 
     def __str__(self):
         return "{}: {}...".format(self.score, self.text[:15])
-
