@@ -167,6 +167,7 @@ def register(request):
 		return render(request, 'register.html', args)
 
 
+#cuts off the video ID if a preview is a youtube link
 def check_preview_for_youtube(preview):
 	watch_prefix = 'watch?v='
 	if 'youtube.com/watch?v=' in preview:
