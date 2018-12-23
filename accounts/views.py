@@ -65,6 +65,7 @@ def register(request):
 		if form.is_valid():
 			form.save()
 			return redirect('profile')
+
 	else: #its a get
 		form = RegistrationForm()
 		args = {'form': form}
