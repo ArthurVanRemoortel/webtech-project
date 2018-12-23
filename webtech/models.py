@@ -126,4 +126,3 @@ class VenueReview(models.Model):
 
     def __str__(self):
         return "{}: {}...".format(self.score, self.text[:15])
-
