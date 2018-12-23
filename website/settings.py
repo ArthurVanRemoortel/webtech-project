@@ -90,13 +90,8 @@ WSGI_APPLICATION = 'website.wsgi.application'
 import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'database',
-        'USER': 'user',
-    },
+    'default': dj_database_url.config(default="postgres://webtech@localhost:5432/database7", conn_max_age=600)
 }
-DATABASES['default'] = dj_database_url.config(default="postgres://webtech@localhost:5432/database", conn_max_age=600)
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 # Password validation
