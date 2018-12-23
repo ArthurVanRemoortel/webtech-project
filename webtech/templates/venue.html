@@ -29,7 +29,7 @@
             <h5 class="">Reviews:  </h5>
             <div class="row container pb-2 pt-2 pl-2">
                 <img class="float-left p-1" src={{ venue.get_score_image_url }} style="height: 80px; width: 80px">
-                <button type="button" class="btn btn-primary my-auto" data-toggle="modal" data-target="#writeReviewModal" data-venue="{{ venue }}" style="height: 40px; ">
+                <button type="button" class="btn btn-primary my-auto" data-toggle="modal" data-target="#writeReviewModal" data-venue="{{ venue }}" style="height: 40px; " {% if not user.is_authenticated %} disabled {% endif %}>
                     Write a review
                 </button>
             </div>
