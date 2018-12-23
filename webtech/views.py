@@ -40,7 +40,6 @@ def index(request):
     search_results_events = []
     last_page_post_data = None
     filter_div_open = False
-    CURRENT_USER = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
 
     if request.method == 'GET' and 'current-search' in request.session:
         # Whenever you change a page it will be considdered a GET request.
@@ -123,7 +122,6 @@ def index(request):
         'all_genres': all_genres,
         'all_venues': all_venues,
         'filter_div_open': filter_div_open,
-        'user': CURRENT_USER
     }
     return render(request, 'index.html', context)
 
@@ -146,8 +144,7 @@ def bookmark_venue(request, venue_id):
 
 def event_page(request, event_id):
     event = Event.objects.get(pk=event_id)
-    current_user = None
-    context = {'event': event, 'user': current_user}
+    context = {'event': event}
     return render(request, 'event_page.html', context)
 
 
@@ -162,10 +159,8 @@ def venue_page(request, venue_id):
             review.save()
     else:
         review_form = ReviewForm()
-    current_user = None
     context = {'venue': venue,
-               'review_form': review_form,
-               'user': current_user}
+               'review_form': review_form}
     return render(request, 'venue.html', context)
 
 

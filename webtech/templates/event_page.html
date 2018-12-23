@@ -81,7 +81,7 @@
                     <div class="btn-group mr-2 btn-group-sm " role="group">
                         <button type="button" class="btn btn-secondary"
                                 onclick="bookmark_event('{{ event.id }}')"
-                                {% if not user %} disabled {% endif %}>
+                                {% if not user.is_authenticated %} disabled {% endif %}>
 
                             <i class="far fa-bookmark"></i>
                         </button>
@@ -129,11 +129,6 @@
 </div>
 
 <script>
-    function bookmark_event(event_id){
-        $.get('/webtech/bookmark_event/'+event_id, function (data) {
-        });
-    }
-
     $('#artistModal').on('show.bs.modal', function (event) {
         var LASTFM_API_KEY = "21be84da5456cdad7c3f91947422f8ad";
         let button = $(event.relatedTarget);
