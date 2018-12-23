@@ -25,4 +25,5 @@ def create_profile(sender, **kwargs):
 		user_profile = UserProfile.objects.create(user=current_user, bio="Fill in your profile bio!", username=current_user.username)
 #creates a userprofile when a user is made
 
+#signal that triggers when a new user is made, making a userprofile
 post_save.connect(create_profile, sender=User)
