@@ -11,6 +11,7 @@ from datetime import date
 from .helpers import LOREM_2_P, LOREM_1_P, django_image_from_url, django_image_from_file
 from random import randint
 import os
+from accounts.models import UserProfile
 
 from django.contrib.gis.geos import *
 from django.contrib.gis.measure import D
@@ -127,7 +128,7 @@ def index(request):
 
 
 def bookmark_event(request, event_id):
-    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    current_user = request.user
     if current_user:
         event = Event.objects.get(pk=event_id)
         current_user.bookmarked_event.add(event)
@@ -135,7 +136,7 @@ def bookmark_event(request, event_id):
 
 
 def bookmark_venue(request, venue_id):
-    current_user = None  # UserProfile.objects.get(username="Webtech")  # TODO: Temporary
+    current_user = request.user 
     if current_user:
         event = Venue.objects.get(pk=venue_id)
         current_user.bookmarked_venues.add(event)
@@ -157,10 +158,10 @@ def venue_page(request, venue_id):
             score = review_form.cleaned_data['score']
             review = VenueReview(text=text, score=score, venue=venue, date=timezone.now())
             review.save()
-    else:
-        review_form = ReviewForm()
+            review.author.add(UserProfile.objects.get(user=request.user.id))
+
     context = {'venue': venue,
-               'review_form': review_form}
+               'review_form': ReviewForm()}
     return render(request, 'venue.html', context)
 
 
@@ -264,6 +265,8 @@ def scrape(request):
     """
     from .scripts.scrapers.flagey_scraper import FlageyScraper
     from .scripts.scrapers.ab_scraper import ABScraper
+
+    #scraper_user, _ = UserProfile.get_or_create()
 
     Event.objects.all().delete()
     Artist.objects.all().delete()
