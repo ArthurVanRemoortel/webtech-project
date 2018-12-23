@@ -30,7 +30,7 @@ class Venue(models.Model):
             'id': self.id,
             'name': self.name,
             'address': self.address_nl,
-            'latLng': [self.point.x, self.point.y],
+            'latlng': [self.point.x, self.point.y],
             }).replace("'", '"')
 
     def __str__(self):
@@ -76,7 +76,7 @@ class Event(models.Model):
             'id': self.id,
             'name': self.name,
             'venue': self.venue.name,
-            'latLng': [self.venue.point.x, self.venue.point.y],
+            'latlng': [self.venue.point.x, self.venue.point.y],
             'artists': [{'id': x['id'], 'name': x['name']} for x in self.artists.values()],
             'date': self.datetime.strftime('%h %-d'),
             'time': self.datetime.strftime('%H:%M'),

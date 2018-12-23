@@ -8,6 +8,7 @@ var user_location = L.latLng(50.8454639, 4.3569867);
 var map = L.map('map').setView(dest,5);
 
 
+// routing plugin
 var control = L.Routing.control({
     router: L.Routing.mapbox(mapboxAccessToken, { profile: 'mapbox/walking' })
 }).addTo(map);
@@ -19,7 +20,17 @@ L.tileLayer(`https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=$
     id: 'mapbox.streets',
 }).addTo(map);
 
-// routing plugin
+
+function userLocation(e) {
+    user_location = e.latlng;
+    control.setWaypoints([user_location]);
+}
+
+function updateRoute(e) {
+    control.spliceWaypoints(control.getWaypoints().length - 1, 1, e.latlng);
+}
+
+
 function createButton(label, container) {
     var btn = L.DomUtil.create('button', 'a', container);
     btn.setAttribute('type', 'button');
@@ -38,29 +49,32 @@ map.on('click', function(e) {
         .openOn(map);
 
     L.DomEvent.on(destBtn, 'click', function() {
-        control.spliceWaypoints(
-            control.getWaypoints().length - 1, 1, e.latlng);
+        updateRoute(e)
         map.closePopup();
     });
 });
 
+
 var venue_markers = L.layerGroup().addTo(map);
+
+function addVenueMarker(venue) {
+    return marker = L.marker(venue.latlng, {
+        title: venue.name,
+        alt: venue.name,
+        riseOnHover: true,
+    })
+        .on({'click': function() {updateRoute(venue)} })
+        .addTo(venue_markers);
+}
 
 $('#find-nearby-venues').click(function() {
     const point = map.getCenter();
     const lng = point.lng;
     const lat = point.lat;
     $.get('/webtech/user_locate/', {lng: point.lng, lat: point.lat}, function(data) {
-        venue_markers
         const venues = JSON.parse(data);
         for (venue of venues) {
-            var marker = L.marker(venue.latLng, {
-                title: venue.name,
-                alt: venue.name,
-                riseOnHover: true,
-            })
-                .on({'click': function(e){control.spliceWaypoints(control.getWaypoints().length - 1, 1, e.latlng)}})
-                .addTo(venue_markers);
+            addVenueMarker(venue)
         };
     });
 });
@@ -83,10 +97,7 @@ function event_popup(evt) {
     container.innerHTML = event_marker_content(evt);
     var btn = createButton("Go to this venue", container);
 
-    L.DomEvent.on(btn, 'click', function() {
-        control.spliceWaypoints(
-            control.getWaypoints().length - 1, 1, evt.latLng);
-    });
+    L.DomEvent.on(btn, 'click', updateRoute(e));
 
     return L.popup({
         autoClose: false,
@@ -94,7 +105,7 @@ function event_popup(evt) {
         closeOnClick: false,
     })
         .setContent(container)
-        .setLatLng(evt.latLng)
+        .setLatLng(evt.latlng)
 }
 
 function get_events_on_date(dateString, inst) {
@@ -119,16 +130,11 @@ $( function() {
     });
 });
 
-function userLocation(e) {
-    user_location = e.latlng;
-    control.setWaypoints([user_location]);
-}
-
 $( document ).ready(function() {
     var selected_event = document.getElementById("selected_event").innerHTML;
     if (selected_event) {
         selected_event = JSON.parse(selected_event);
-        map.setView(selected_event.latLng, 16)
+        map.setView(selected_event.latlng, 16)
         event_popup(selected_event).addTo(event_markers);
         map.on('locationfound', userLocation).locate();
     } else {
