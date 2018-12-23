@@ -41,9 +41,9 @@
         </ul>
         <form class="form-inline">
             <div class="form-group">
-                <a href="{% url 'profile' %}">
-                <button class="btn btn-outline-success mr-sm-2" type="submit">Profile</button></a>
-                <a href="{% url 'register' %}"><button class="btn btn-outline-success my-sm-0 pl-2" type="submit">Sign up</button></a>
+                <a href="{% url 'login' %}" class="btn btn-outline-success mr-sm-2">Log in</a>
+                <a href="{% url 'register' %}" class="btn btn-outline-success mr-sm-2 pl-2">Sign up</a>
+                <a href="{% url 'profile' %}" class="btn btn-outline-success mr-sm-2 ">Profile</a>
             </div>
         </form>
     </div>
@@ -51,10 +51,8 @@
 {% block content %}
 {% endblock %}
 
-{% block javascript %}
-{% endblock %}
-
 </body>
+
 <script>
     function bookmark_event(event_id){
         $.get('/webtech/bookmark_event/'+event_id, function (data) {
@@ -65,4 +63,5 @@
         });
     }
 </script>
+
 </html>

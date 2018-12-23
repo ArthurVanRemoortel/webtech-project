@@ -146,7 +146,8 @@ def bookmark_venue(request, venue_id):
 
 def event_page(request, event_id):
     event = Event.objects.get(pk=event_id)
-    context = {'event': event}
+    current_user = None
+    context = {'event': event, 'user': current_user}
     return render(request, 'event_page.html', context)
 
 
@@ -161,9 +162,10 @@ def venue_page(request, venue_id):
             review.save()
     else:
         review_form = ReviewForm()
-
+    current_user = None
     context = {'venue': venue,
-               'review_form': review_form}
+               'review_form': review_form,
+               'user': current_user}
     return render(request, 'venue.html', context)
 
 

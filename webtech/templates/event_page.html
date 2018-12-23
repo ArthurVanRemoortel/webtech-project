@@ -79,7 +79,10 @@
 
                 <dd class="ml-3">
                     <div class="btn-group mr-2 btn-group-sm " role="group">
-                        <button type="button" class="btn btn-secondary" onclick="bookmark_event('{{ event.id }}')">
+                        <button type="button" class="btn btn-secondary"
+                                onclick="bookmark_event('{{ event.id }}')"
+                                {% if not user %} disabled {% endif %}>
+
                             <i class="far fa-bookmark"></i>
                         </button>
 
