@@ -37,7 +37,11 @@ class Venue(models.Model):
 
     @property
     def rating(self):
-        return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
+        reviews = VenueReview.objects.filter(venue=self.pk)
+        if reviews.count() > 0:
+            return int(round(VenueReview.objects.filter(venue=self.pk).aggregate(Avg('score'))['score__avg'], 0))
+        else:
+            return 0
 
     def get_score_image_url(self):
         return "/media/images/assets/score{}.png".format(self.rating)
